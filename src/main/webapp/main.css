@@ -1,0 +1,89 @@
+h1{
+    color: white;
+    font-weight: bold;
+    position: relative;
+    left: 0;
+    top: 0;
+}
+
+#login_div{
+    border: solid black;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+header{
+    float: top;
+    clear: both;
+    width: 100%;
+    background-color: black;
+    display: flex;
+   /* flex-direction: row; */
+    padding: 10px;
+    text-align: left;
+}
+
+#btn-logout{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+
+}
+
+input{
+    margin: 5px;
+}
+
+nav{
+    border: solid green;
+    width: 22%;
+    float: left;
+}
+
+article{
+    font-size: 1.2em;
+    float: right;
+    border: solid blue;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+    width: 98%;
+    padding: 30px;
+}
+
+.slotTableClass{
+    border: solid black;
+}
+
+.slotTableClass td{
+    color: white;
+    border-top: solid grey;
+    border-left: solid grey;
+    text-align: center;
+}
+
+.slotTableClass th{
+    border: solid black;
+    text-align: center;
+}
+
+aside{
+    border: solid red;
+    width: 22%;
+    float: right;
+}
+
+
+
+footer{
+    float: bottom;
+    clear: both;
+    width: 100%;
+    background-color: yellow;
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link href="bootstrap-4.5.2-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+    <!-- http://localhost:8080/Prenotazioni_war_exploded/ -->
+
+
+    <title>Login</title>
+</head>
+<body>
+    <div id="page">
+        <header>
+            <h1>Prenotazioni</h1>
+            <button v-if="role" id="btn-logout" class="btn btn-outline-light" v-on:click="logout">LOGOUT</button>
+        </header>
+
+        <!--<aside>
+          <p>placeholder aside</p>
+        </aside>-->
+
+        <article>
+
+            <div id="login_div" v-if="role == null">
+               <form method="post">
+                   <p><label>Username<input type = "text" id = "username" required/></label></p>
+                   <p><label>Password<input type = "password" id = "password" required/></label></p>
+                   <input class="btn btn-outline-dark"  v-on:click="login" type="button" value="LOGIN" id="login"/>
+                   <br><input class="btn btn-outline-dark" v-on:click="guestLogin" id = "guest_login" type = "button" value = "Prosegui come ospite"/>
+               </form>
+            </div>
+
+            <div id="div-prenotazioni-table" v-if="role">
+                <label>Selezionare una materia</label>
+                <select class="form-select" id="selectCorso" v-on:change="getDocenti" >
+                    <option selected>Nessuna materia</option>
+                </select>
+                <label>Selezionare un docente</label>
+                <select class="form-select" id="selectDocente" v-on:change="getPrenotazioniDocente">
+                    <option selected>Nessun docente</option>
+                </select>
+
+                <table id="slotTable" class="slotTableStyle">
+                    <tr>
+                      <td style="color: black;">Calendario</td>
+                      <th scope="col" id="LUNEDI">LUNEDI</th>
+                      <th scope="col" id="MARTEDI">MARTEDI</th>
+                      <th scope="col" id="MERCOLEDI">MERCOLEDI</th>
+                      <th scope="col" id="GIOVEDI">GIOVEDI</th>
+                      <th scope="col" id="VENERDI">VENERDI</th>
+                    </tr>
+                    <tr id="15-16">
+                      <th scope="row">15-16</th>
+                      <td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr id="16-17">
+                      <th scope="row">16-17</th>
+                      <td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr id="17-18">
+                      <th scope="row">17-18</th>
+                      <td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr id="18-19">
+                      <th scope="row">18-19</th>
+                      <td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- TODO: popolare la tabella con i dati delle prenotazioni dell'utente loggato
+                        https://www.w3schools.com/jsref/met_table_insertrow.asp
+             -->
+            <div id="div-prenotazioni-utente"  v-if="isAuth()">
+                <table class="table" id="table-prenotazioni-utente">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Giorno</th>
+                        <th scope="col">Ora</th>
+                        <th scope="col">Docente</th>
+                        <th scope="col">Materia</th>
+                        <th scope="col">Stato</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <!-- todo: se non ci sono prenotazioni, non visualizzare tabella -->
+                            <td>Nessuna prenotazione effettuata</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </article>
+
+        <!--<nav>
+          <p>placeholder nav</p>
+        </nav>-->
+
+
+
+<footer></footer>
+    </div>
+
+
+   <script type="text/javascript" src="index.js"></script>
+</body>
+</html>
