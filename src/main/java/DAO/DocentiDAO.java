@@ -36,9 +36,9 @@ public class DocentiDAO {
             conn = DAO.connect();
 
             Statement st = conn.createStatement();
-            ResultSet res = st.executeQuery("SELECT id_docente FROM docente WHERE nome='"+nome+"' AND cognome='"+cognome+"';");
+            ResultSet res = st.executeQuery("SELECT ID_DOCENTE FROM docente WHERE nome='"+nome+"' AND cognome='"+cognome+"';");
             if(res.next())
-                id = res.getInt("id");
+                id = res.getInt("ID_DOCENTE");
         }finally{
             if(conn != null)
                 conn.close();

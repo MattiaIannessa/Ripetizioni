@@ -85,6 +85,34 @@ public class PrenotazioniServlet extends HttpServlet {
 
                 out.println(" { \"msg\": \"OK\" }");
                 break;
+            case "rimuoviPrenotazione":
+                String corso = request.getParameter("corso");
+
+                String[] docente = request.getParameter("docente").split(" ");
+                String nome = docente[0];
+                String cognome = docente[1];
+
+                String giorno = request.getParameter("giorno");
+                String ora = request.getParameter("ora");
+                String stato = request.getParameter("stato");
+
+                String role = (String) request.getSession(false).getAttribute("userRole");
+                if(!role.equals("Amministratore") && !role.equals("Cliente")  ) {
+                    out.println(" { \"msg\": \"Non possiedi l'autorizzazione per questa operazione\" }");
+                    break;
+                }
+                else {
+                    String username = (String) request.getSession(false).getAttribute("userName");
+
+                    try {
+                        PrenotazioniDAO.eliminaPrenotazione(corso, username, nome, cognome, giorno, ora, stato);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        out.println(" { \"msg\": \"Query fallita\" }");
+                    }
+                }
+                out.println(" { \"msg\": \"OK\" }");
+                break;
             default:
                 out.println(" { \"msg\": \"Invalid action\" }");
                 out.flush();

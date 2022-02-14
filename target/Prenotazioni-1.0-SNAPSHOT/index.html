@@ -48,38 +48,47 @@
                     <option selected>Nessun docente</option>
                 </select>
 
-                <table id="slotTable" class="slotTableStyle">
-                    <tr>
-                      <td style="color: black;">Calendario</td>
-                      <th scope="col" id="LUNEDI">LUNEDI</th>
-                      <th scope="col" id="MARTEDI">MARTEDI</th>
-                      <th scope="col" id="MERCOLEDI">MERCOLEDI</th>
-                      <th scope="col" id="GIOVEDI">GIOVEDI</th>
-                      <th scope="col" id="VENERDI">VENERDI</th>
-                    </tr>
-                    <tr id="15-16">
-                      <th scope="row">15-16</th>
-                      <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr id="16-17">
-                      <th scope="row">16-17</th>
-                      <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr id="17-18">
-                      <th scope="row">17-18</th>
-                      <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr id="18-19">
-                      <th scope="row">18-19</th>
-                      <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                <table id="slotTable" class="table" >
+                <caption>Per prenotare selezionare materia e docente e cliccare su un uno slot libero</caption>
+                <thead class="thead-dark">
+                <tr>
+                    <td>Calendario</td>
+
+                    <th scope="col" id="LUNEDI">LUNEDI</th>
+                    <th scope="col" id="MARTEDI">MARTEDI</th>
+                    <th scope="col" id="MERCOLEDI">MERCOLEDI</th>
+                    <th scope="col" id="GIOVEDI">GIOVEDI</th>
+                    <th scope="col" id="VENERDI">VENERDI</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr id="15-16">
+                    <th scope="row">15-16</th>
+                    <td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr id="16-17">
+                    <th scope="row">16-17</th>
+                    <td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr id="17-18">
+                    <th scope="row">17-18</th>
+                    <td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr id="18-19">
+                    <th scope="row">18-19</th>
+                    <td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                </tbody>
                 </table>
             </div>
+
+            <hr v-if="isAuth()">
 
             <!-- TODO: popolare la tabella con i dati delle prenotazioni dell'utente loggato
                         https://www.w3schools.com/jsref/met_table_insertrow.asp
              -->
-            <div id="div-prenotazioni-utente"  v-if="isAuth()">
+            <div id="div-prenotazioni-utente" style="visibility: hidden" v-if="isAuth()">
+                <h2>Prenotazioni effettuate</h2>
                 <table class="table" id="table-prenotazioni-utente">
                     <thead class="thead-dark">
                     <tr>

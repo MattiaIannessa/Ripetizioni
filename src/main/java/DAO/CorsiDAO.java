@@ -45,4 +45,24 @@ public class CorsiDAO {
 
         return out;
     }
+
+    public static int getIdCorso(String titolo) throws SQLException {
+        Connection conn = null;
+        int out = -1;
+        //System.out.println("SELECT ID_CORSO FROM corso WHERE TITOLO='"+titolo+"' ;");
+
+        try{
+            conn = DAO.connect();
+
+            Statement st = conn.createStatement();
+            ResultSet res = st.executeQuery("SELECT ID_CORSO FROM corso WHERE TITOLO='"+titolo+"' ;");
+            if(res.next())
+                out = res.getInt("ID_CORSO");
+        }finally{
+            if(conn != null)
+                conn.close();
+        }
+
+        return out;
+    }
 }

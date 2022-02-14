@@ -8,11 +8,27 @@ h1{
 
 #login_div{
     border: solid black;
-    padding: 20px;
+    padding: 1em;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+}
+
+#div-prenotazioni-utente{
+    /*width: 98%;*/
+}
+
+#table-prenotazioni-utente{
+    margin-top: 1.5em;
+}
+
+h2{
+    margin-top: 2em;
+}
+
+hr{
+    width: 100%;
 }
 
 
@@ -23,19 +39,19 @@ header{
     background-color: black;
     display: flex;
    /* flex-direction: row; */
-    padding: 10px;
+    padding: 0.5em;
     text-align: left;
 }
 
 #btn-logout{
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 1em;
+    top: 1em;
 
 }
 
 input{
-    margin: 5px;
+    margin: 0.5em;
 }
 
 nav{
@@ -47,17 +63,17 @@ nav{
 article{
     font-size: 1.2em;
     float: right;
-    border: solid blue;
+    /*border: solid blue;*/
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 20px;
+    margin: 1.5em;
     width: 98%;
     padding: 30px;
 }
 
-.slotTableClass{
+/*.slotTableClass{
     border: solid black;
 }
 
@@ -72,7 +88,7 @@ article{
     border: solid black;
     text-align: center;
 }
-
+*/
 aside{
     border: solid red;
     width: 22%;

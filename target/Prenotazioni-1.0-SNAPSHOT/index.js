@@ -39,6 +39,7 @@ let app = new Vue ({
         isAuth:function(){
             if(this.role !== null)
                 if(this.role.localeCompare("Amministratore") ||this.role.localeCompare("Cliente")){
+                    //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
                     this.getPrenotazioniUtente();
                     return true;
                 }
@@ -246,6 +247,7 @@ let app = new Vue ({
 
         //recupero le prenotazioni dell'utente loggato
         getPrenotazioniUtente:function(){
+            //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
             //if(this.isAuth()){
                 let self = this;
                 $.ajax({
@@ -269,6 +271,9 @@ let app = new Vue ({
                         if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
                             let row_i = 1;
 
+                            if(data.length !== 0)
+                                document.getElementById("div-prenotazioni-utente").style.visibility = "visible";
+
                             data.forEach(row_element => {
                                 let row = table.insertRow(row_i);
 
@@ -277,8 +282,16 @@ let app = new Vue ({
                                 row.insertCell(2).innerHTML = row_element.docente;
                                 row.insertCell(3).innerHTML = row_element.corso;
                                 row.insertCell(4).innerHTML = row_element.stato;
+                                let elimina_cell = row.insertCell(5);
+                                elimina_cell.innerHTML = "Elimina";
+                                elimina_cell.addEventListener("click", eliminaCellListener);
+                                if(row_element.stato === "Attiva")
+                                    row.insertCell(6).innerHTML = "Segna come effettuata";
+
                                 row_i++;
                             });
+
+                            //  document.getElementById("div-prenotazioni-utente").style.visibility = "visible";
                         }else{
                             alert(data.msg);
                         }
@@ -324,7 +337,7 @@ function cellListener(){
     let table = document.getElementById("slotTable");
 
     let col = $(this).parent().children().index($(this));
-    let row = $(this).parent().parent().children().index($(this).parent());
+    let row = ($(this).parent().parent().children().index($(this).parent()))+1;
 
     let col_header = table.rows[0].cells[col].innerHTML;
     let row_header = table.rows[row].cells[0].innerHTML;
@@ -333,4 +346,35 @@ function cellListener(){
     if(table.rows[row].cells[col].innerHTML === 'LIBERO'){
         prenota(col_header,row_header, table, row, col);
     }
+}
+
+/* event listener per le celle della tabella degli slot */
+function eliminaCellListener(){
+    let table = document.getElementById("table-prenotazioni-utente");
+
+    let row = ($(this).parent().parent().children().index($(this).parent()));
+
+    //la funzione in dao e servlet è da implementare
+    $.ajax({
+        url: "prenotazioniServlet",
+        type: "POST",
+        data: {
+            'action': "rimuoviPrenotazione",
+            'giorno': table.rows[row].cells[0].innerHTML,
+            'ora': table.rows[row].cells[1].innerHTML,
+            'docente': table.rows[row].cells[2].innerHTML,
+            'corso': table.rows[row].cells[3].innerHTML,
+            'stato': table.rows[row].cells[4].innerHTML
+        },
+
+        success: function(response) {
+            let data = JSON.parse(JSON.stringify(response));
+
+            if(data.msg === 'OK'){
+                table.rows[row].remove();
+            }else{
+                alert(data.msg);
+            }
+        }
+    })//end ajax
 }

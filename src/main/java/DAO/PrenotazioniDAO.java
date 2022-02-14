@@ -4,10 +4,7 @@ import model.Corso;
 import model.Docente;
 import model.Prenotazione;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
@@ -92,5 +89,21 @@ public class PrenotazioniDAO {
             }
         }
         return out;
+    }
+
+    public static void eliminaPrenotazione(String corso, String username, String nomeDocente, String cognomeDocente, String giorno, String ora, String stato) throws SQLException{
+        int id_utente = UtentiDAO.getIdUtente(username);
+        int id_corso = CorsiDAO.getIdCorso(corso);
+        int id_docente = DocentiDAO.getIdDocente(nomeDocente,cognomeDocente);
+
+        try (Connection conn = DAO.connect()) {
+
+            Statement st = conn.createStatement();
+            int rs = st.executeUpdate("DELETE FROM prenotazioni WHERE ID_CORSO="+id_corso+" AND ID_UTENTE="+id_utente+" AND ID_DOCENTE="+id_docente+" " +
+                                                "AND GIORNO='"+giorno+"' AND ORA='"+ora+"' AND STATO='"+stato+"' ");
+
+            if(rs!=1)
+                throw new SQLException("Query fallita");
+        }
     }
 }
