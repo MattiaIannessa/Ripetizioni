@@ -37,12 +37,28 @@ let app = new Vue ({
         },
 
         isAuth:function(){
-            if(this.role !== null)
-                if(this.role.localeCompare("Amministratore") ||this.role.localeCompare("Cliente")){
+            if(this.role !== null) {
+                //console.log(this.role.localeCompare("Cliente"));
+                if (this.role.localeCompare("Amministratore") || this.role.localeCompare("Cliente")) {
                     //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
                     this.getPrenotazioniUtente();
                     return true;
                 }
+            }
+            return false;
+        },
+
+        isAmmAuth:function(){
+
+            if(this.role !== null) {
+                //console.log(this.role.localeCompare("Amministratore"));
+
+                if(this.role.localeCompare("Amministratore")===0) {
+                    //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
+                    this.getPrenotazioni();
+                    return true;
+                }
+            }
             return false;
         },
 
@@ -245,7 +261,8 @@ let app = new Vue ({
             })//end ajax
         },
 
-        //recupero le prenotazioni dell'utente loggato
+        /* Estrae tutte le prenotazioni dal db e le visualizza nella tabella "table-storico-amm"
+        * */
         getPrenotazioniUtente:function(){
             //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
             //if(this.isAuth()){
@@ -261,43 +278,105 @@ let app = new Vue ({
                     success: function (response) {
                         //svuoto la tabella
                         let table = document.getElementById("table-prenotazioni-utente");
-                        if(table !== null)
-                            for(let i=table.rows.length-1;i>0;i--){
-                                table.deleteRow(i);
-                            }
+                        let table_storico = document.getElementById("table-storico-utente");
+                        cleanTable(table);
+                        cleanTable(table_storico);
 
                         let data = JSON.parse(JSON.stringify(response));
 
-                        if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
-                            let row_i = 1;
+                        if (!data.msg) {  //se nella risposta non c'è msg, la query è andata a buon fine
+                            let row_i_table = 1;
+                            let row_i_storico = 1;
 
-                            if(data.length !== 0)
+                            if (data.length !== 0)
                                 document.getElementById("div-prenotazioni-utente").style.visibility = "visible";
 
+                            let row_table;
                             data.forEach(row_element => {
-                                let row = table.insertRow(row_i);
 
-                                row.insertCell(0).innerHTML = row_element.giorno;
-                                row.insertCell(1).innerHTML = row_element.ora;
-                                row.insertCell(2).innerHTML = row_element.docente;
-                                row.insertCell(3).innerHTML = row_element.corso;
-                                row.insertCell(4).innerHTML = row_element.stato;
-                                let elimina_cell = row.insertCell(5);
-                                elimina_cell.innerHTML = "Elimina";
-                                elimina_cell.addEventListener("click", eliminaCellListener);
-                                if(row_element.stato === "Attiva")
-                                    row.insertCell(6).innerHTML = "Segna come effettuata";
+                                if (row_element.stato === "Attiva") { //inserisco nella tabella "table-prenotazioni-utente"
+                                    table = document.getElementById("table-prenotazioni-utente");
+                                    row_table = table.insertRow(row_i_table);
 
-                                row_i++;
+                                } else { //inserisco nella tabella "table-storico-utente"
+                                    table = document.getElementById("table-storico-utente");
+                                    row_table = table.insertRow(row_i_storico);
+                                    row_i_storico++;
+                                }
+
+                                row_table.insertCell(0).innerHTML = row_element.id_prenotazione;
+                                row_table.insertCell(1).innerHTML = row_element.giorno;
+                                row_table.insertCell(2).innerHTML = row_element.ora;
+                                row_table.insertCell(3).innerHTML = row_element.docente;
+                                row_table.insertCell(4).innerHTML = row_element.corso;
+                                row_table.insertCell(5).innerHTML = row_element.stato;
+
+                                if (row_element.stato === "Attiva") {
+                                    let elimina_cell = row_table.insertCell(6);
+                                    elimina_cell.innerHTML = "Disdici";
+                                    elimina_cell.addEventListener("click", disdiciCellListener);
+
+                                    let eff_cell = row_table.insertCell(7);
+                                    eff_cell.innerHTML = "Segna come effettuata";
+                                    eff_cell.addEventListener("click", effCellListener);
+                                    row_i_table++;
+                                }
+
                             });
 
-                            //  document.getElementById("div-prenotazioni-utente").style.visibility = "visible";
-                        }else{
+
+                        } else {
                             alert(data.msg);
                         }
                     }
+
                 })//end ajax
-            //}
+        },
+
+
+        getPrenotazioni:function(){
+            let self = this;
+            $.ajax({
+                url: "prenotazioniServlet",
+                type: "GET",
+                data: {
+                    'action': "getPrenotazioni"
+                },
+
+                success: function (response) {
+                    //svuoto la tabella
+                    let table = document.getElementById("table-storico-amm");
+
+                    cleanTable(table);
+
+                    let data = JSON.parse(JSON.stringify(response));
+
+                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
+                        let row_i = 1;
+
+                        if(data.length !== 0)
+                            document.getElementById("table-storico-amm").style.visibility = "visible";
+
+                        let row_table;
+                        data.forEach(row_element => {
+                            table = document.getElementById("table-storico-amm");
+                            row_table = table.insertRow(row_i);
+
+                            row_table.insertCell(0).innerHTML = row_element.id_prenotazione;
+                            row_table.insertCell(1).innerHTML = row_element.utente;
+                            row_table.insertCell(2).innerHTML = row_element.giorno;
+                            row_table.insertCell(3).innerHTML = row_element.ora;
+                            row_table.insertCell(4).innerHTML = row_element.docente;
+                            row_table.insertCell(5).innerHTML = row_element.corso;
+                            row_table.insertCell(6).innerHTML = row_element.stato;
+
+                            row_i++;
+                        });
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            })//end ajax
         }
     }
 });
@@ -348,33 +427,88 @@ function cellListener(){
     }
 }
 
-/* event listener per le celle della tabella degli slot */
-function eliminaCellListener(){
+/* todo: quando una prenotazione viene disdetta o segnata come effettuata, metterla nella tabella storico prenotazioni amministratore */
+function disdiciCellListener(){
     let table = document.getElementById("table-prenotazioni-utente");
+    let row_index = ($(this).parent().parent().children().index($(this).parent()));
+    let row = table.rows[row_index];
 
-    let row = ($(this).parent().parent().children().index($(this).parent()));
-
-    //la funzione in dao e servlet è da implementare
     $.ajax({
         url: "prenotazioniServlet",
         type: "POST",
         data: {
-            'action': "rimuoviPrenotazione",
-            'giorno': table.rows[row].cells[0].innerHTML,
-            'ora': table.rows[row].cells[1].innerHTML,
-            'docente': table.rows[row].cells[2].innerHTML,
-            'corso': table.rows[row].cells[3].innerHTML,
-            'stato': table.rows[row].cells[4].innerHTML
+            'action': "disdiciPrenotazione",
+            'id_prenotazione': row.cells[0].innerHTML,
         },
 
         success: function(response) {
             let data = JSON.parse(JSON.stringify(response));
 
             if(data.msg === 'OK'){
-                table.rows[row].remove();
+
+                //todo: aggiungere riga nella tabella "storico"
+                row.cells[5].innerHTML = "Disdetta";
+                addRow(document.getElementById("table-storico-utente"),row);
+                if(app.isAmmAuth()){
+                    addRow(document.getElementById("table-storico-amm"),row);
+                }
+                row.remove();
+
             }else{
                 alert(data.msg);
             }
         }
     })//end ajax
+}
+
+function effCellListener(){
+    let table = document.getElementById("table-prenotazioni-utente");
+    let row_index = ($(this).parent().parent().children().index($(this).parent()));
+    let row = table.rows[row_index];
+
+    $.ajax({
+        url: "prenotazioniServlet",
+        type: "POST",
+        data: {
+            'action': "segnaComeEffettuataPrenotazione",
+            'id_prenotazione': row.cells[0].innerHTML,
+        },
+
+        success: function(response) {
+            let data = JSON.parse(JSON.stringify(response));
+
+            if(data.msg === 'OK'){
+                row.cells[5].innerHTML = "Effettuata";
+                addRow(document.getElementById("table-storico-utente"),row);
+                if(app.isAmmAuth()){
+                    addRow(document.getElementById("table-storico-amm"),row);
+                }
+                row.remove();
+
+            }else{
+                alert(data.msg);
+            }
+        }
+    })//end ajax
+}
+
+function cleanTable(table){
+    if(table !== null)
+        for(let i=table.rows.length-1;i>0;i--){
+            table.deleteRow(i);
+        }
+}
+
+/* aggiunge una riga row alla tabella table */
+function addRow(table, row){
+   // let table_storico = document.getElementById("table-storico-utente");
+    let row_i = table.rows.length;
+    //table_storico.insertRow(row_i).innerHTML = table.rows[row];
+    let row_new = table.insertRow(row_i);
+    row_new.insertCell(0).innerHTML = row.cells[0].innerHTML;
+    row_new.insertCell(1).innerHTML = row.cells[1].innerHTML;
+    row_new.insertCell(2).innerHTML = row.cells[2].innerHTML;
+    row_new.insertCell(3).innerHTML = row.cells[3].innerHTML;
+    row_new.insertCell(4).innerHTML = row.cells[4].innerHTML;
+    row_new.insertCell(5).innerHTML = row.cells[5].innerHTML;
 }

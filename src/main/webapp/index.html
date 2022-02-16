@@ -88,10 +88,28 @@
                         https://www.w3schools.com/jsref/met_table_insertrow.asp
              -->
             <div id="div-prenotazioni-utente" style="visibility: hidden" v-if="isAuth()">
-                <h2>Prenotazioni effettuate</h2>
+                <h2>Area personale</h2>
+                <h3>Prenotazioni attive</h3>
                 <table class="table" id="table-prenotazioni-utente">
                     <thead class="thead-dark">
                     <tr>
+                        <th scope="col">Codice</th>
+                        <th scope="col">Giorno</th>
+                        <th scope="col">Ora</th>
+                        <th scope="col">Docente</th>
+                        <th scope="col">Materia</th>
+                        <th scope="col">Stato</th>
+                        <th scope="col">Azione</th>
+                        <th scope="col">Azione</th>
+                    </tr>
+                    </thead>
+                </table>
+
+                <h1>Storico prenotazioni personali</h1>
+                <table class="table" id="table-storico-utente">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Codice</th>
                         <th scope="col">Giorno</th>
                         <th scope="col">Ora</th>
                         <th scope="col">Docente</th>
@@ -99,12 +117,26 @@
                         <th scope="col">Stato</th>
                     </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <!-- todo: se non ci sono prenotazioni, non visualizzare tabella -->
-                            <td>Nessuna prenotazione effettuata</td>
-                        </tr>
-                    </tbody>
+
+                </table>
+            </div>
+
+            <hr v-if="isAmmAuth()">
+            <div id="div-storico-amm" v-if="isAmmAuth()">
+                <h2>Area amministratore</h2>
+                <h3>Storico prenotazioni</h3>
+                <table class="table" id="table-storico-amm">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Codice</th>
+                        <th scope="col">Utente</th>
+                        <th scope="col">Giorno</th>
+                        <th scope="col">Ora</th>
+                        <th scope="col">Docente</th>
+                        <th scope="col">Materia</th>
+                        <th scope="col">Stato</th>
+                    </tr>
+                    </thead>
 
                 </table>
             </div>

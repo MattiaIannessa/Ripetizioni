@@ -4,6 +4,7 @@ public class Prenotazione {
     /* Corso, utente e docente, che nel db sono interi, qui sono stringhe, in modo da poter usare questa classe per
      * conservare prenotazioni con gli id numerici o con i valori testuali.
      * */
+    private int id_prenotazione;
     private String corso;
     private String utente;
     private String docente;
@@ -11,7 +12,8 @@ public class Prenotazione {
     private String ora;
     private String stato;
 
-    public Prenotazione(String corso, String utente, String docente, String giorno, String ora, String stato) {
+    public Prenotazione(int id_prenotazione, String corso, String utente, String docente, String giorno, String ora, String stato) {
+        this.id_prenotazione = id_prenotazione;
         this.corso = corso;
         this.utente = utente;
         this.docente = docente;

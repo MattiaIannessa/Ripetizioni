@@ -1,6 +1,5 @@
 package DAO;
 
-import model.Corso;
 import model.Docente;
 import model.Prenotazione;
 
@@ -22,8 +21,12 @@ public class PrenotazioniDAO {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM prenotazioni");
             while (rs.next()) {
-                out.add(new Prenotazione(rs.getString("ID_CORSO"), rs.getString("ID_UTENTE"),
-                        rs.getString("ID_DOCENTE"), rs.getString("GIORNO"),
+                String utente = UtentiDAO.getUtenteByID(rs.getString("ID_UTENTE"));
+                Docente docente = DocentiDAO.getDocenteFromID(rs.getInt("ID_DOCENTE"));
+                String corso = CorsiDAO.getCorsoByID(rs.getInt("ID_CORSO"));
+
+                out.add(new Prenotazione(rs.getInt("ID_PRENOTAZIONE"), corso, utente,
+                        docente.getNome()+" "+docente.getCognome(), rs.getString("GIORNO"),
                         rs.getString("ORA"), rs.getString("STATO")));
             }
 
@@ -42,7 +45,7 @@ public class PrenotazioniDAO {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT * FROM prenotazioni WHERE ID_DOCENTE = "+id_docente+" AND STATO = 'Attiva'");
             while (rs.next()) {
-                out.add(new Prenotazione(rs.getString("ID_CORSO"), rs.getString("ID_UTENTE"),
+                out.add(new Prenotazione(rs.getInt("ID_PRENOTAZIONE"), rs.getString("ID_CORSO"), rs.getString("ID_UTENTE"),
                         rs.getString("ID_DOCENTE"), rs.getString("GIORNO"),
                         rs.getString("ORA"), rs.getString("STATO")));
             }
@@ -51,17 +54,27 @@ public class PrenotazioniDAO {
         return out;
     }
 
-    public static void prenota(int id_corso, String username, int id_docente, String giorno, String ora) throws SQLException {
+    public static int prenota(int id_corso, String username, int id_docente, String giorno, String ora) throws SQLException {
+
+        int out = -1;
         try (Connection conn = DAO.connect()) {
 
             int id_utente = UtentiDAO.getIdUtente(username);
 
-            Statement st = conn.createStatement();
-            st.executeUpdate("INSERT INTO prenotazioni (ID_CORSO, ID_UTENTE, ID_DOCENTE, GIORNO, ORA, STATO) " +
-                                                " VALUES ("+id_corso+","+id_utente+","+id_docente+",'"+giorno+"','"+ora+"','Attiva' )" );
+            String sql = "INSERT INTO prenotazioni (ID_CORSO, ID_UTENTE, ID_DOCENTE, GIORNO, ORA, STATO) " +
+                    " VALUES ("+id_corso+","+id_utente+","+id_docente+",'"+giorno+"','"+ora+"','Attiva' )";
 
+            PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            st.executeUpdate();
+            ResultSet res = st.getGeneratedKeys();
+
+            if(res.next()){
+                if(res.next())
+                    out = res.getInt(1);
             }
         }
+        return out;
+    }
 
     /**restituisce le prenotazioni dell'utente con username = username**/
     public static ArrayList<Prenotazione> getPrenotazioniUtente(String username) throws SQLException {
@@ -83,7 +96,7 @@ public class PrenotazioniDAO {
                 String docenteStr = docente.getNome()+" "+docente.getCognome();
                 String corsoStr = CorsiDAO.getCorsoByID(rs.getInt("ID_CORSO"));
 
-                out.add(new Prenotazione(corsoStr, rs.getString("ID_UTENTE"),
+                out.add(new Prenotazione(rs.getInt("ID_PRENOTAZIONE"), corsoStr, rs.getString("ID_UTENTE"),
                         docenteStr, rs.getString("GIORNO"),
                         rs.getString("ORA"), rs.getString("STATO")));
             }
@@ -91,16 +104,41 @@ public class PrenotazioniDAO {
         return out;
     }
 
-    public static void eliminaPrenotazione(String corso, String username, String nomeDocente, String cognomeDocente, String giorno, String ora, String stato) throws SQLException{
-        int id_utente = UtentiDAO.getIdUtente(username);
+    public static void eliminaPrenotazione(int id_prenotazione) throws SQLException{
+        /*int id_utente = UtentiDAO.getIdUtente(username);
         int id_corso = CorsiDAO.getIdCorso(corso);
-        int id_docente = DocentiDAO.getIdDocente(nomeDocente,cognomeDocente);
+        int id_docente = DocentiDAO.getIdDocente(nomeDocente,cognomeDocente);*/
 
         try (Connection conn = DAO.connect()) {
 
             Statement st = conn.createStatement();
-            int rs = st.executeUpdate("DELETE FROM prenotazioni WHERE ID_CORSO="+id_corso+" AND ID_UTENTE="+id_utente+" AND ID_DOCENTE="+id_docente+" " +
-                                                "AND GIORNO='"+giorno+"' AND ORA='"+ora+"' AND STATO='"+stato+"' ");
+            int rs = st.executeUpdate("DELETE FROM prenotazioni WHERE ID_PRENOTAZIONE="+id_prenotazione+" ");
+
+            if(rs!=1)
+                throw new SQLException("Query fallita");
+        }
+    }
+
+    public static void disdiciPrenotazione(int id_prenotazione) throws SQLException{
+        /*int id_utente = UtentiDAO.getIdUtente(username);
+        int id_corso = CorsiDAO.getIdCorso(corso);
+        int id_docente = DocentiDAO.getIdDocente(nomeDocente,cognomeDocente);*/
+
+        try (Connection conn = DAO.connect()) {
+
+            Statement st = conn.createStatement();
+            int rs = st.executeUpdate(" UPDATE prenotazioni SET STATO = 'Disdetta' WHERE ID_PRENOTAZIONE="+id_prenotazione+" ");
+
+            if(rs!=1)
+                throw new SQLException("Query fallita");
+        }
+    }
+
+    public static void segnaComeEffettuataPrenotazione(int id_prenotazione) throws SQLException {
+        try (Connection conn = DAO.connect()) {
+
+            Statement st = conn.createStatement();
+            int rs = st.executeUpdate(" UPDATE prenotazioni SET STATO = 'Effettuata' WHERE ID_PRENOTAZIONE="+id_prenotazione+" ");
 
             if(rs!=1)
                 throw new SQLException("Query fallita");

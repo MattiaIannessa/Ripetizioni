@@ -24,4 +24,17 @@ public class UtentiDAO {
         return id;
     }
 
+    public static String getUtenteByID(String id_utente) throws SQLException {
+        String out = null;
+
+        try (Connection conn = DAO.connect()) {
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT USERNAME FROM utente WHERE ID = '"+id_utente+"' ");
+            if(rs.next()){
+                out = rs.getString("USERNAME");
+            }
+        }
+        return out;
+    }
 }
