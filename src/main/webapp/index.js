@@ -156,37 +156,49 @@ let app = new Vue ({
                     let data = JSON.parse(JSON.stringify(response));
 
                     //svuoto selectCorso per non avere dati incorretti
-                    let sele = document.getElementById("selectCorso");
-                    if(sele !== null)
-                        for(let i=sele.options.length-1;i>0;i--){
-                            sele.remove(i);
-                        }
+                    let select = document.getElementById("selectCorso");
+                    cleanSelect(select);
+
+                    //se l'utente loggato è amministratore, popolo anche il menù a tendina nella sezione amministrazione
+                    // contenente i corsi
+                    let selCorsiAmm;
+                    if(app!=null && app.isAmmAuth()){
+                        selCorsiAmm = document.getElementById("selectCorsoAmm");
+                        cleanSelect(selCorsiAmm);
+                    }
 
                     if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
                         //popolo il menu a tendina "selectCorso"
-                        let select = document.getElementById("selectCorso");
                         for(let element in data){
                             let opt = document.createElement("option");
                             opt.value = data[element].ID_CORSO;
                             opt.innerText = data[element].titolo;
                             if(select !== null)
                                 select.append(opt);
+
+                            if(app.isAmmAuth() && selCorsiAmm !== null){
+                                let optAmm = document.createElement("option");
+                                optAmm.value = data[element].ID_CORSO;
+                                optAmm.innerText = data[element].titolo;
+                                selCorsiAmm.append(optAmm);
+                            }
                         }
                     }else{
                         alert(data.msg);
                     }
                 }
             })//end ajax
+
+            /*if(this.isAmmAuth()){
+                this.getDocentiAmm();
+            }*/
         },
 
         //gestione del menu a tendina "selectDocente"
         getDocenti:function(){
-
             //svuoto il menu a tendina "selectDocente"
             let sele = document.getElementById("selectDocente");
-            for(let i=sele.options.length-1;i>0;i--){
-                sele.remove(i);
-            }
+            cleanSelect(sele);
 
             //let idCorsoSelezionato = document.getElementById("selectCorso").value;
             $.ajax({
@@ -377,8 +389,103 @@ let app = new Vue ({
                     }
                 }
             })//end ajax
+        },
+
+        inserisciDocente:function(){
+            if(document.getElementById("nome_docente").value === "" || document.getElementById("cognome_docente").value === "" ){
+                alert("Compila tutti i campi");
+                return;
+            }
+
+                $.ajax({
+                url: "docentiServlet",
+                type: "POST",
+                data: {
+                    'nome': document.getElementById("nome_docente").value,
+                    'cognome': document.getElementById("cognome_docente").value,
+                    'action': "inserisciDocente"
+                },
+
+                success: function (response) {
+                    document.getElementById("nome_docente").value = "";
+                    document.getElementById("cognome_docente").value = "";
+                    let data = JSON.parse(JSON.stringify(response));
+                    alert(data.msg);
+                }
+            })//end ajax
+        },
+
+        inserisciCorso:function(){
+            if(document.getElementById("titolo_corso").value === ""){
+                alert("Inserisci il titolo del corso che vuoi inserire");
+                return;
+            }
+            $.ajax({
+                url: "corsiServlet",
+                type: "POST",
+                data: {
+                    'corso': document.getElementById("titolo_corso").value,
+                    'action': "inserisciCorso"
+                },
+
+                success: function (response) {
+                    document.getElementById("titolo_corso").value = "";
+                    let data = JSON.parse(JSON.stringify(response));
+                    alert(data.msg);
+                }
+            })//end ajax
+        },
+
+        getDocentiAmm:function(){
+            $.ajax({
+                url: "docentiServlet",
+                type: "POST",
+                data: {
+                    'action': "getDocenti"
+                },
+
+                success: function (response) {
+                    let data = JSON.parse(JSON.stringify(response));
+
+                    let selDocAmm = document.getElementById("selectDocenteAmm");
+                    cleanSelect(selDocAmm);
+
+                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
+                        //popolo il menu a tendina "selectCorso"
+
+                        for(let element in data){
+                            let optDocAmm = document.createElement("option");
+                            optDocAmm.value = data[element].id_docente;
+                            optDocAmm.innerText = data[element].nome+" "+data[element].cognome;
+                            selDocAmm.append(optDocAmm);
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            })//end ajax
+
+        },
+
+        associa:function(){
+            $.ajax({
+                url: "insegnaServlet",
+                type: "POST",
+                data: {
+                    'corso': document.getElementById("selectCorsoAmm").value,
+                    'docente': document.getElementById("selectDocenteAmm").value,
+                    'action': "inserisciInsegna"
+                },
+
+                success: function (response) {
+                    cleanSelect(document.getElementById("selectDocenteAmm"));
+                    let data = JSON.parse(JSON.stringify(response));
+                    alert(data.msg);
+                }
+            })//end ajax
         }
     }
+
 });
 
 /* Invocazione della servlet "prenotazioniServlet" per fare una prenotazione */
@@ -509,4 +616,11 @@ function addRow(table, row){
     row_new.insertCell(3).innerHTML = row.cells[3].innerHTML;
     row_new.insertCell(4).innerHTML = row.cells[4].innerHTML;
     row_new.insertCell(5).innerHTML = row.cells[5].innerHTML;
+}
+
+function cleanSelect(select){
+    if(select !== null)
+        for(let i=select.options.length-1;i>0;i--){
+            select.remove(i);
+        }
 }

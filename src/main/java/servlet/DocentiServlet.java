@@ -32,6 +32,9 @@ public class DocentiServlet extends HttpServlet {
 
         Gson gson = new Gson();
         PrintWriter out = response.getWriter();
+        String[] doc_arr;
+        String docente;
+
         switch(request.getParameter("action")){
             case "getDocenti":
 
@@ -40,9 +43,9 @@ public class DocentiServlet extends HttpServlet {
                     String param = request.getParameter("id_corso");
                     if(param != null) {  //se nella richiesta c'è id_corso, il client vuole la lista dei docenti di un certo corso
                         queryResult = DocentiDAO.getDocenti(Integer.parseInt(param));      //eseguo la query per ricavare tutti i docenti della materia con id = param
-                    }else{
-                        throw new SQLException();
-                        //queryResult = DocentiDAO.getDocenti();
+                    }else{ //se non c'è param, restituisco tutti i docenti presenti nel db
+                        //throw new SQLException();
+                        queryResult = DocentiDAO.getDocenti();
                     }
 
                 } catch (SQLException e) {
@@ -50,6 +53,42 @@ public class DocentiServlet extends HttpServlet {
                 }
 
                 out.println(gson.toJson(queryResult));
+
+                break;
+            case "rimuoviDocente":
+                docente = request.getParameter("docente");
+                doc_arr = docente.split(" ");
+
+                try {
+                    int id_docente = DocentiDAO.getIdDocente(doc_arr[0], doc_arr[1]);
+                    if(id_docente == -1){
+                        out.println(" { \"msg\": \"Il docente selezionato non esiste\" }");
+                        break;
+                    }
+                    DocentiDAO.rimuoviDocente(id_docente);
+                } catch (SQLException e) {
+                    out.println(" { \"msg\": \"Query fallita\" }");
+                }
+
+                out.println(" { \"msg\": \"OK\" }");
+
+                break;
+            case "inserisciDocente":
+                String nome = request.getParameter("nome");
+                String cognome = request.getParameter("cognome");
+
+                try {
+                    if(DocentiDAO.getIdDocente(nome,cognome) != -1){
+                        out.println(" { \"msg\": \"Il docente inserito esiste già\" }");
+                        break;
+                    }
+                    DocentiDAO.inserisciDocente(nome, cognome);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    out.println(" { \"msg\": \"Inserimento fallito\" }");
+                }
+
+                out.println(" { \"msg\": \"Docente inserito con successo\" }");
 
                 break;
             default:

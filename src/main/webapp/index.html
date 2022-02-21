@@ -84,9 +84,6 @@
 
             <hr v-if="isAuth()">
 
-            <!-- TODO: popolare la tabella con i dati delle prenotazioni dell'utente loggato
-                        https://www.w3schools.com/jsref/met_table_insertrow.asp
-             -->
             <div id="div-prenotazioni-utente" style="visibility: hidden" v-if="isAuth()">
                 <h2>Area personale</h2>
                 <h3>Prenotazioni attive</h3>
@@ -105,7 +102,7 @@
                     </thead>
                 </table>
 
-                <h1>Storico prenotazioni personali</h1>
+                <h3>Storico prenotazioni personali</h3>
                 <table class="table" id="table-storico-utente">
                     <thead class="thead-dark">
                     <tr>
@@ -139,6 +136,39 @@
                     </thead>
 
                 </table>
+            </div>
+
+            <div id="div-db-amm" v-if="isAmmAuth()">
+
+                <h3>Inserisci docente</h3>
+                <div class="div_db_amm">
+                    <form method="post">
+                        <p><label>Nome<input type = "text" id = "nome_docente" required/></label></p>
+                        <p><label>Cognome<input type = "text" id = "cognome_docente" required/></label></p>
+                        <input class="btn btn-outline-dark"  v-on:click="inserisciDocente" type="submit" value="INSERISCI" id="inserisciDocenteBtn"/>
+                    </form>
+                </div>
+
+                <h3>Inserisci corso</h3>
+                <div class="div_db_amm">
+                    <form method="post">
+                        <p><label>Titolo<input type = "text" id = "titolo_corso" required/></label></p>
+                        <input class="btn btn-outline-dark"  v-on:click="inserisciCorso" type="submit" value="INSERISCI" id="inserisciCorsoBtn"/>
+                    </form>
+                </div>
+
+                <h3>Associa corso con docente</h3>
+                <div class="div_db_amm">
+                    <label>Selezionare una materia</label>
+                    <select class="form-select" id="selectCorsoAmm" v-on:change="getDocentiAmm">
+                        <option selected>Nessuna materia</option>
+                    </select>
+                    <label>Selezionare un docente</label>
+                    <select class="form-select" id="selectDocenteAmm">
+                        <option selected>Nessun docente</option>
+                    </select>
+                    <br><button id="btn-associa" class="btn btn-outline-dark" v-on:click="associa">ASSOCIA</button>
+                </div>
             </div>
 
         </article>

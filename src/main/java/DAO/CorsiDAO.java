@@ -47,22 +47,32 @@ public class CorsiDAO {
     }
 
     public static int getIdCorso(String titolo) throws SQLException {
-        Connection conn = null;
         int out = -1;
-        //System.out.println("SELECT ID_CORSO FROM corso WHERE TITOLO='"+titolo+"' ;");
 
-        try{
-            conn = DAO.connect();
-
+        try (Connection conn = DAO.connect()) {
             Statement st = conn.createStatement();
             ResultSet res = st.executeQuery("SELECT ID_CORSO FROM corso WHERE TITOLO='"+titolo+"' ;");
-            if(res.next())
+            if(res.next()){
                 out = res.getInt("ID_CORSO");
-        }finally{
-            if(conn != null)
-                conn.close();
-        }
+            }
 
+
+        }
         return out;
+    }
+
+    public static void rimuoviCorso(int id) throws SQLException{
+
+        try (Connection conn = DAO.connect()) {
+            Statement st = conn.createStatement();
+            st.executeUpdate("DELETE FROM corso WHERE ID_CORSO=" + id + ";");
+        }
+    }
+
+    public static void inserisciCorso(String titolo) throws SQLException {
+        try (Connection conn = DAO.connect()) {
+            Statement st = conn.createStatement();
+            st.executeUpdate("INSERT INTO corso (`ID_CORSO`, `TITOLO`) VALUES (NULL, '" + titolo + "');");
+        }
     }
 }

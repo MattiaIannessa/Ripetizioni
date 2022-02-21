@@ -24,16 +24,56 @@ public class CorsiServlet extends HttpServlet {
         DAO.registerDriver();
     }
 
-    /*public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        Gson gson = new Gson();
+        PrintWriter out = response.getWriter();
+        String corso;
+        switch(request.getParameter("action")){
+            case "rimuoviCorso":
+                corso = request.getParameter("corso");
 
-    }*/
+                try {
+                    int id_corso = CorsiDAO.getIdCorso(corso);
+                    CorsiDAO.rimuoviCorso(id_corso);
+                } catch (SQLException e) {
+                    out.println(" { \"msg\": \"Rimozione fallita\" }");
+                }
+
+                out.println(" { \"msg\": \"Corso rimosso con successo\" }");
+
+                break;
+
+            case "inserisciCorso":
+                corso = request.getParameter("corso");
+                try {
+                    if(CorsiDAO.getIdCorso(corso)!=-1){
+                        out.println(" { \"msg\": \"Un corso con un titolo uguale esiste già\" }");
+                        break;
+                    }else{
+                        CorsiDAO.inserisciCorso(corso);
+                    }
+
+                } catch (SQLException e) {
+                    out.println(" { \"msg\": \"Inserimento fallito\" }");
+                }
+
+                out.println(" { \"msg\": \"Corso inserito con successo\" }");
+
+                break;
+            default:
+                out.println(" { \"msg\": \"Invalid action\" }");
+                out.flush();
+                out.close();
+        }
+    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
         response.setContentType("application/json;charset=UTF-8");
         Gson gson = new Gson();
         PrintWriter out = response.getWriter();
         switch(request.getParameter("action")){
-            case "getCorsi":  //returns session data
+            case "getCorsi":
 
                 ArrayList<Corso> queryResult = null;
                 try {
@@ -46,7 +86,7 @@ public class CorsiServlet extends HttpServlet {
 
                 break;
             default:
-                out.println("invalid action");
+                out.println(" { \"msg\": \"Invalid action\" }");
                 out.flush();
                 out.close();
         }

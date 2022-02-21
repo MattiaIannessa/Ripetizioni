@@ -15,16 +15,11 @@ import java.util.ArrayList;
 
 public class DocentiDAO {
 
-    public static void inserisci_docente(String nome, String cognome) throws SQLException {
-        Connection conn = null;
+    public static void inserisciDocente(String nome, String cognome) throws SQLException {
 
-        try{
-            conn = DAO.connect();
+        try (Connection conn = DAO.connect()) {
             Statement st = conn.createStatement();
-            st.executeUpdate("INSERT INTO `Docente` (`ID_DOCENTE`, `Nome`, `Cognome`) VALUES (NULL, '"+nome+"', '"+cognome+"');");
-        }finally{
-            if(conn != null)
-                conn.close();
+            st.executeUpdate("INSERT INTO `Docente` (`ID_DOCENTE`, `Nome`, `Cognome`) VALUES (NULL, '" + nome + "', '" + cognome + "');");
         }
     }
 
@@ -66,7 +61,7 @@ public class DocentiDAO {
         return out;
     }
 
-    public static void rimuovi_docente(int id) throws SQLException{
+    public static void rimuoviDocente(int id) throws SQLException{
         Connection conn = null;
 
         try{
@@ -89,6 +84,21 @@ public class DocentiDAO {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT docente.ID_DOCENTE, NOME, COGNOME FROM docente JOIN insegna i on docente.ID_DOCENTE = i.ID_DOCENTE " +
                                                "WHERE ID_CORSO = "+param+" ");
+            while (rs.next()) {
+                out.add(new Docente(rs.getInt("ID_DOCENTE"), rs.getString("NOME"), rs.getString("COGNOME")));
+            }
+        }
+
+        return out;
+    }
+
+    public static ArrayList<Docente> getDocenti() throws SQLException {
+        ArrayList<Docente> out = new ArrayList<>();
+
+        try (Connection conn = DAO.connect()) {
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM docente ");
             while (rs.next()) {
                 out.add(new Docente(rs.getInt("ID_DOCENTE"), rs.getString("NOME"), rs.getString("COGNOME")));
             }
