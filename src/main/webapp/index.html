@@ -145,22 +145,21 @@
                     <form method="post">
                         <p><label>Nome<input type = "text" id = "nome_docente" required/></label></p>
                         <p><label>Cognome<input type = "text" id = "cognome_docente" required/></label></p>
-                        <input class="btn btn-outline-dark"  v-on:click="inserisciDocente" type="submit" value="INSERISCI" id="inserisciDocenteBtn"/>
+                        <input class="btn btn-outline-dark" v-on:click="inserisciDocente"  type="button" value="INSERISCI" id="inserisciDocenteBtn"/>
                     </form>
                 </div>
-
                 <h3>Inserisci corso</h3>
                 <div class="div_db_amm">
                     <form method="post">
                         <p><label>Titolo<input type = "text" id = "titolo_corso" required/></label></p>
-                        <input class="btn btn-outline-dark"  v-on:click="inserisciCorso" type="submit" value="INSERISCI" id="inserisciCorsoBtn"/>
+                        <input class="btn btn-outline-dark" v-on:click="inserisciCorso" type="button" value="INSERISCI" id="inserisciCorsoBtn"/>
                     </form>
                 </div>
 
-                <h3>Associa corso con docente</h3>
+                <h3>Associazioni corso-docente</h3>
                 <div class="div_db_amm">
                     <label>Selezionare un corso</label>
-                    <select class="form-select" id="selectCorsoAmm" v-on:change="getDocentiAmm">
+                    <select class="form-select" id="selectCorsoAmm">
                         <option selected>Nessun corso</option>
                     </select>
                     <label>Selezionare un docente</label>
@@ -168,10 +167,19 @@
                         <option selected>Nessun docente</option>
                     </select>
                     <button id="btn-associa" class="btn btn-outline-dark" v-on:click="associa">ASSOCIA</button>
-                    <br><button id="btn-elimina-corso" class="btn btn-outline-dark" v-on:click="eliminaCorso">ELIMINA CORSO</button>
-                    <br><button id="btn-elimina-docente" class="btn btn-outline-dark" v-on:click="eliminaDocente">ELIMINA DOCENTE</button>
-
+                    <button id="btn-elimina-corso" class="btn btn-outline-dark" v-on:click="eliminaCorso">ELIMINA CORSO</button>
+                    <button id="btn-elimina-docente" class="btn btn-outline-dark" v-on:click="eliminaDocente">ELIMINA DOCENTE</button>
                 </div>
+
+                <h3>Elimina associazioni corso-docente</h3>
+                <div class="div_db_amm">
+                    <label>Selezionare una associazione</label>
+                    <select class="form-select" id="selectAssocAmm">
+                        <option selected>Nessuna associazione</option>
+                    </select>
+                    <button id="btn-elimina-assoc" class="btn btn-outline-dark" v-on:click="eliminaAssoc">ELIMINA ASSOCIAZIONE</button>
+                </div>
+
             </div>
 
         </article>

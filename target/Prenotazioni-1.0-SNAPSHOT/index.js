@@ -188,6 +188,7 @@ let app = new Vue ({
                     }
                     if(app.isAmmAuth() && document.getElementById("selectDocenteAmm") !== null){
                         app.getDocentiAmm();
+                        app.getAssocAmm();
                     }
                 }
             })//end ajax
@@ -395,21 +396,27 @@ let app = new Vue ({
         },
 
         inserisciDocente:function(){
-            if(document.getElementById("nome_docente").value === "" || document.getElementById("cognome_docente").value === "" ){
+            let nome = document.getElementById("nome_docente").value;
+            let cognome = document.getElementById("cognome_docente").value;
+            if(nome === "" || cognome === "" ){
                 alert("Compila tutti i campi");
                 return;
             }
 
-                $.ajax({
+            $.ajax({
                 url: "docentiServlet",
                 type: "POST",
                 data: {
-                    'nome': document.getElementById("nome_docente").value,
-                    'cognome': document.getElementById("cognome_docente").value,
+                    'nome': nome,
+                    'cognome': cognome,
                     'action': "inserisciDocente"
                 },
 
                 success: function (response) {
+                    //update menù a tendina
+                    app.getDocentiAmm();
+                    app.getDocenti();
+
                     document.getElementById("nome_docente").value = "";
                     document.getElementById("cognome_docente").value = "";
                     let data = JSON.parse(JSON.stringify(response));
@@ -432,6 +439,8 @@ let app = new Vue ({
                 },
 
                 success: function (response) {
+                    //update menù a tendina
+                    app.getCorsi();
                     document.getElementById("titolo_corso").value = "";
                     let data = JSON.parse(JSON.stringify(response));
                     alert(data.msg);
@@ -482,6 +491,7 @@ let app = new Vue ({
 
                 success: function (response) {
                     //cleanSelect(document.getElementById("selectDocenteAmm"));
+                    app.getAssocAmm();
                     let data = JSON.parse(JSON.stringify(response));
                     alert(data.msg);
                 }
@@ -503,6 +513,7 @@ let app = new Vue ({
 
                 success: function (response) {
                     app.getCorsi();
+                    app.getAssocAmm(); //update del menù a tendina delle associazioni
                     let data = JSON.parse(JSON.stringify(response));
                     alert(data.msg);
                 }
@@ -524,6 +535,59 @@ let app = new Vue ({
 
                 success: function (response) {
                     app.getDocentiAmm();
+                    app.getAssocAmm(); //update del menù a tendina delle associazioni
+                    let data = JSON.parse(JSON.stringify(response));
+                    alert(data.msg);
+                }
+            })//end ajax
+        },
+
+        getAssocAmm:function(){
+            //svuoto il menu a tendina "selectDocente"
+            let sel = document.getElementById("selectAssocAmm");
+            cleanSelect(sel);
+
+            //let idCorsoSelezionato = document.getElementById("selectCorso").value;
+            $.ajax({
+                url: "insegnaServlet",
+                type: "GET",
+                data: {
+                    'action': "getInsegna"
+                },
+
+                success: function (response) {
+                    let data = JSON.parse(JSON.stringify(response));
+
+                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
+                        //popolo il menu a tendina "selectCorso"
+                        for(let element in data){
+                            let opt = document.createElement("option");
+                            //opt.value = data[element].id_docente;
+                            opt.innerText = data[element].docente +' - '+ data[element].corso;
+                            sel.append(opt);
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            })//end ajax
+        },
+
+        eliminaAssoc:function(){
+            if(document.getElementById("selectAssocAmm").value === "Nessuna associazione"){
+                alert("Selezionare la associazione da eliminare");
+                return;
+            }
+            $.ajax({
+                url: "insegnaServlet",
+                type: "POST",
+                data: {
+                    'assoc': document.getElementById("selectAssocAmm").value,
+                    'action': "rimuoviInsegna"
+                },
+
+                success: function (response) {
+                    app.getAssocAmm(); //update del menù a tendina delle associazioni
                     let data = JSON.parse(JSON.stringify(response));
                     alert(data.msg);
                 }

@@ -32,8 +32,6 @@ public class DocentiServlet extends HttpServlet {
 
         Gson gson = new Gson();
         PrintWriter out = response.getWriter();
-        String[] doc_arr;
-        String docente;
 
         switch(request.getParameter("action")){
             case "getDocenti":
@@ -72,6 +70,7 @@ public class DocentiServlet extends HttpServlet {
 
                 break;
             case "inserisciDocente":
+                System.out.println("DocentiServlet 75");
                 String nome = request.getParameter("nome");
                 String cognome = request.getParameter("cognome");
 
