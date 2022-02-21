@@ -38,6 +38,8 @@ public class CorsiDAO {
             ResultSet res = st.executeQuery("SELECT * FROM corso WHERE ID_CORSO="+id+" ;");
             if(res.next())
                 out = res.getString("TITOLO");
+        }catch(Exception e){
+            return null;
         }finally{
             if(conn != null)
                 conn.close();

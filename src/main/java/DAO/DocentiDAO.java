@@ -34,7 +34,10 @@ public class DocentiDAO {
             ResultSet res = st.executeQuery("SELECT ID_DOCENTE FROM docente WHERE nome='"+nome+"' AND cognome='"+cognome+"';");
             if(res.next())
                 id = res.getInt("ID_DOCENTE");
-        }finally{
+        }catch(Exception e){
+            return -1;
+        }
+        finally{
             if(conn != null)
                 conn.close();
         }
@@ -53,6 +56,8 @@ public class DocentiDAO {
             ResultSet res = st.executeQuery("SELECT * FROM docente WHERE ID_DOCENTE="+id+" ;");
             if(res.next())
                 out = new Docente(id, res.getString("NOME"), res.getString("COGNOME"));
+        }catch(Exception e){
+            return null;
         }finally{
             if(conn != null)
                 conn.close();
@@ -62,16 +67,11 @@ public class DocentiDAO {
     }
 
     public static void rimuoviDocente(int id) throws SQLException{
-        Connection conn = null;
 
-        try{
-            conn = DAO.connect();
+        try (Connection conn = DAO.connect()) {
 
             Statement st = conn.createStatement();
-            st.executeUpdate("DELETE FROM docente WHERE id_docente="+id+";");
-        }finally{
-            if(conn != null)
-                conn.close();
+            st.executeUpdate("DELETE FROM docente WHERE id_docente=" + id + ";");
         }
     }
 

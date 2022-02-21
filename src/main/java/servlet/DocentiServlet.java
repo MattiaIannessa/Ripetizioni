@@ -56,12 +56,10 @@ public class DocentiServlet extends HttpServlet {
 
                 break;
             case "rimuoviDocente":
-                docente = request.getParameter("docente");
-                doc_arr = docente.split(" ");
+                int id_docente = Integer.parseInt(request.getParameter("docente"));
 
                 try {
-                    int id_docente = DocentiDAO.getIdDocente(doc_arr[0], doc_arr[1]);
-                    if(id_docente == -1){
+                    if(DocentiDAO.getDocenteFromID(id_docente) == null){
                         out.println(" { \"msg\": \"Il docente selezionato non esiste\" }");
                         break;
                     }
@@ -70,7 +68,7 @@ public class DocentiServlet extends HttpServlet {
                     out.println(" { \"msg\": \"Query fallita\" }");
                 }
 
-                out.println(" { \"msg\": \"OK\" }");
+                out.println(" { \"msg\": \"Docente eliminato con successo\" }");
 
                 break;
             case "inserisciDocente":

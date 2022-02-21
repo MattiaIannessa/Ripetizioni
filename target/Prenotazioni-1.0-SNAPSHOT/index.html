@@ -39,9 +39,9 @@
             </div>
 
             <div id="div-prenotazioni-table" v-if="role">
-                <label>Selezionare una materia</label>
+                <label>Selezionare una corso</label>
                 <select class="form-select" id="selectCorso" v-on:change="getDocenti" >
-                    <option selected>Nessuna materia</option>
+                    <option selected>Nessun corso</option>
                 </select>
                 <label>Selezionare un docente</label>
                 <select class="form-select" id="selectDocente" v-on:change="getPrenotazioniDocente">
@@ -49,7 +49,7 @@
                 </select>
 
                 <table id="slotTable" class="table" >
-                <caption>Per prenotare selezionare materia e docente e cliccare su un uno slot libero</caption>
+                <caption>Per prenotare selezionare corso e docente e cliccare su un uno slot libero</caption>
                 <thead class="thead-dark">
                 <tr>
                     <td>Calendario</td>
@@ -94,7 +94,7 @@
                         <th scope="col">Giorno</th>
                         <th scope="col">Ora</th>
                         <th scope="col">Docente</th>
-                        <th scope="col">Materia</th>
+                        <th scope="col">Corso</th>
                         <th scope="col">Stato</th>
                         <th scope="col">Azione</th>
                         <th scope="col">Azione</th>
@@ -110,7 +110,7 @@
                         <th scope="col">Giorno</th>
                         <th scope="col">Ora</th>
                         <th scope="col">Docente</th>
-                        <th scope="col">Materia</th>
+                        <th scope="col">Corso</th>
                         <th scope="col">Stato</th>
                     </tr>
                     </thead>
@@ -130,7 +130,7 @@
                         <th scope="col">Giorno</th>
                         <th scope="col">Ora</th>
                         <th scope="col">Docente</th>
-                        <th scope="col">Materia</th>
+                        <th scope="col">Corso</th>
                         <th scope="col">Stato</th>
                     </tr>
                     </thead>
@@ -159,15 +159,18 @@
 
                 <h3>Associa corso con docente</h3>
                 <div class="div_db_amm">
-                    <label>Selezionare una materia</label>
+                    <label>Selezionare un corso</label>
                     <select class="form-select" id="selectCorsoAmm" v-on:change="getDocentiAmm">
-                        <option selected>Nessuna materia</option>
+                        <option selected>Nessun corso</option>
                     </select>
                     <label>Selezionare un docente</label>
                     <select class="form-select" id="selectDocenteAmm">
                         <option selected>Nessun docente</option>
                     </select>
-                    <br><button id="btn-associa" class="btn btn-outline-dark" v-on:click="associa">ASSOCIA</button>
+                    <button id="btn-associa" class="btn btn-outline-dark" v-on:click="associa">ASSOCIA</button>
+                    <br><button id="btn-elimina-corso" class="btn btn-outline-dark" v-on:click="eliminaCorso">ELIMINA CORSO</button>
+                    <br><button id="btn-elimina-docente" class="btn btn-outline-dark" v-on:click="eliminaDocente">ELIMINA DOCENTE</button>
+
                 </div>
             </div>
 

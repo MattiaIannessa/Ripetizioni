@@ -186,6 +186,9 @@ let app = new Vue ({
                     }else{
                         alert(data.msg);
                     }
+                    if(app.isAmmAuth() && document.getElementById("selectDocenteAmm") !== null){
+                        app.getDocentiAmm();
+                    }
                 }
             })//end ajax
 
@@ -478,7 +481,49 @@ let app = new Vue ({
                 },
 
                 success: function (response) {
-                    cleanSelect(document.getElementById("selectDocenteAmm"));
+                    //cleanSelect(document.getElementById("selectDocenteAmm"));
+                    let data = JSON.parse(JSON.stringify(response));
+                    alert(data.msg);
+                }
+            })//end ajax
+        },
+
+        eliminaCorso:function(){
+            if(document.getElementById("selectCorsoAmm").value === "Nessun corso"){
+                alert("Selezionare il corso da eliminare");
+                return;
+            }
+            $.ajax({
+                url: "corsiServlet",
+                type: "POST",
+                data: {
+                    'corso': document.getElementById("selectCorsoAmm").value,
+                    'action': "rimuoviCorso"
+                },
+
+                success: function (response) {
+                    app.getCorsi();
+                    let data = JSON.parse(JSON.stringify(response));
+                    alert(data.msg);
+                }
+            })//end ajax
+        },
+
+        eliminaDocente:function(){
+            if(document.getElementById("selectDocenteAmm").value === "Nessun docente"){
+                alert("Selezionare il docente da eliminare");
+                return;
+            }
+            $.ajax({
+                url: "docentiServlet",
+                type: "POST",
+                data: {
+                    'docente': document.getElementById("selectDocenteAmm").value,
+                    'action': "rimuoviDocente"
+                },
+
+                success: function (response) {
+                    app.getDocentiAmm();
                     let data = JSON.parse(JSON.stringify(response));
                     alert(data.msg);
                 }

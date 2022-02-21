@@ -31,10 +31,14 @@ public class CorsiServlet extends HttpServlet {
         String corso;
         switch(request.getParameter("action")){
             case "rimuoviCorso":
-                corso = request.getParameter("corso");
+                int id_corso = Integer.parseInt(request.getParameter("corso"));
 
                 try {
-                    int id_corso = CorsiDAO.getIdCorso(corso);
+                    if(CorsiDAO.getCorsoByID(id_corso) == null){
+                        out.println(" { \"msg\": \"Il corso selezionato non esiste\" }");
+                        break;
+                    }
+                   // int id_corso = CorsiDAO.getIdCorso(corso);
                     CorsiDAO.rimuoviCorso(id_corso);
                 } catch (SQLException e) {
                     out.println(" { \"msg\": \"Rimozione fallita\" }");
