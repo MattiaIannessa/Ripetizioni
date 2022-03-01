@@ -107,7 +107,6 @@ public class PrenotazioniServlet extends HttpServlet {
                 }
                 else {
                     int id_prenotazione = Integer.parseInt(request.getParameter("id_prenotazione"));
-
                     try {
                         PrenotazioniDAO.disdiciPrenotazione(id_prenotazione);
                     } catch (SQLException e) {

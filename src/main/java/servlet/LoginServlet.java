@@ -15,7 +15,7 @@ import java.sql.SQLException;
 @WebServlet(name = "loginServlet", value = "/loginServlet")
 public class LoginServlet extends HttpServlet {
 
-    private HttpSession session = null;
+    private HttpSession session;
 
     public void init() {
         DAO.registerDriver();
@@ -105,7 +105,6 @@ public class LoginServlet extends HttpServlet {
                 else{
                     out.println("{\"username\": \"null\", \"role\": \"null\"}");
                 }
-
                     //out.println("{ \"username\": \"null\", \"role\": \"null\" }");
                 out.flush();
                 out.close();
