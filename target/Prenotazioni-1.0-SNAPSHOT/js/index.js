@@ -8,6 +8,8 @@ let app = new Vue ({
     },
 
     mounted(){
+        //todo: change this comment, checking what getSession does
+        //when app is loaded, check if user is logged and get courses titles.
         this.getSession();
         this.getCorsi();
     },
@@ -36,11 +38,10 @@ let app = new Vue ({
             return this.role;
         },
 
+        //return true if user is authenticated
         isAuth:function(){
             if(this.role !== null) {
-                //console.log(this.role.localeCompare("Cliente"));
                 if (this.role.localeCompare("Amministratore") || this.role.localeCompare("Cliente")) {
-                    //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
                     this.getPrenotazioniUtente();
                     return true;
                 }
@@ -48,13 +49,11 @@ let app = new Vue ({
             return false;
         },
 
+        //return true if user is logged as admin
         isAmmAuth:function(){
 
             if(this.role !== null) {
-                //console.log(this.role.localeCompare("Amministratore"));
-
                 if(this.role.localeCompare("Amministratore")===0) {
-                    //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
                     this.getPrenotazioni();
                     return true;
                 }
@@ -62,6 +61,7 @@ let app = new Vue ({
             return false;
         },
 
+        //get session info from server. Saves user's role
         getSession:function() {
             let self = this;
             $.ajax({
@@ -92,12 +92,12 @@ let app = new Vue ({
                 },
 
                 success: function() {
-                    //let data = JSON.parse(JSON.stringify(response));
                     app.setRole(null);
                 }
             })//end ajax
         },
 
+        //login with username and password
         login:function(){
             $.ajax({
                 url: "loginServlet",
@@ -109,7 +109,6 @@ let app = new Vue ({
                 },
 
                 success: function (response) {
-
                     let data = JSON.parse(JSON.stringify(response));
 
                     if(data.role === 'null'){
@@ -121,9 +120,9 @@ let app = new Vue ({
                     }
                 }
             })//end ajax
-
         },
 
+        //login as a guest
         guestLogin:function(){
             $.ajax({
                 url: "loginServlet",
@@ -140,10 +139,9 @@ let app = new Vue ({
                     }
                 }
             })//end ajax
+        },
 
-        },//end guestLogin:function
-
-        //gestione del menu a tendina "selectCorso"
+        // Get courses titles from server
         getCorsi:function(){
             $.ajax({
                 url: "corsiServlet",
@@ -154,37 +152,38 @@ let app = new Vue ({
 
                 success: function (response) {
                     let data = JSON.parse(JSON.stringify(response));
-
-                    //svuoto selectCorso per non avere dati incorretti
                     let select = document.getElementById("selectCorso");
+                    let selCorsiAmm = document.getElementById("selectCorsoAmm");
+
+
+                    //remove all elements from 'selectCorso'
                     cleanSelect(select);
 
-                    //se l'utente loggato è amministratore, popolo anche il menù a tendina nella sezione amministrazione
-                    // contenente i corsi
-                    let selCorsiAmm;
+                    /* If the logged user is admin, remove all elements from 'selectCorsoAmm' too.
+                    * */
                     if(app!=null && app.isAmmAuth()){
-                        selCorsiAmm = document.getElementById("selectCorsoAmm");
                         cleanSelect(selCorsiAmm);
                     }
 
-                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
-                        //popolo il menu a tendina "selectCorso"
+                    if(!data['msg']){  // If in the response there's not 'msg', the query was successful
+                        // Fill 'selectCorso' and, if logged user is admin, 'selectCorsoAmm too.
+                        let opt;
                         for(let element in data){
-                            let opt = document.createElement("option");
-                            opt.value = data[element].ID_CORSO;
-                            opt.innerText = data[element].titolo;
+                            opt  = document.createElement("option");
+                            opt.value = data[element]['ID_CORSO'];
+                            opt.innerText = data[element]['titolo'];
                             if(select !== null)
                                 select.append(opt);
 
                             if(app.isAmmAuth() && selCorsiAmm !== null){
-                                let optAmm = document.createElement("option");
-                                optAmm.value = data[element].ID_CORSO;
-                                optAmm.innerText = data[element].titolo;
-                                selCorsiAmm.append(optAmm);
+                                opt = document.createElement("option");
+                                opt.value = data[element]['ID_CORSO'];
+                                opt.innerText = data[element]['titolo'];
+                                selCorsiAmm.append(opt);
                             }
                         }
                     }else{
-                        alert(data.msg);
+                        alert(data['msg']);
                     }
                     if(app.isAmmAuth() && document.getElementById("selectDocenteAmm") !== null){
                         app.getDocentiAmm();
@@ -192,15 +191,10 @@ let app = new Vue ({
                     }
                 }
             })//end ajax
-
-            /*if(this.isAmmAuth()){
-                this.getDocentiAmm();
-            }*/
         },
 
-        //gestione del menu a tendina "selectDocente"
+        // Same operations of getCorsi
         getDocenti:function(){
-            //svuoto il menu a tendina "selectDocente"
             let sele = document.getElementById("selectDocente");
             cleanSelect(sele);
 
@@ -216,23 +210,18 @@ let app = new Vue ({
                 success: function (response) {
                     let data = JSON.parse(JSON.stringify(response));
 
-                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
+                    if(!data['msg']){  //se nella risposta non c'è msg, la query è andata a buon fine
                         //popolo il menu a tendina "selectCorso"
                         let select = document.getElementById("selectDocente");
-                        for(let element in data){
-                            let opt = document.createElement("option");
-                            opt.value = data[element].id_docente;
-                            opt.innerText = data[element].nome+" "+data[element].cognome;
-                            select.append(opt);
-                        }
+                        fillDocentiSelect(select,data);
                     }else{
-                        alert(data.msg);
+                        alert(data['msg']);
                     }
                 }
             })//end ajax
         },
 
-        //recupero le prenotazioni attive del docente selezionato per popolare la tabella degli slot disponibili
+        // Get active bookings of selected teacher and fill free slots table
         getPrenotazioniDocente:function(){
             $.ajax({
                 url: "prenotazioniServlet",
@@ -243,45 +232,44 @@ let app = new Vue ({
                 },
 
                 success: function (response) {
-
                     let data = JSON.parse(JSON.stringify(response));
 
-                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
+                    if(!data['msg']){
                         let table = document.getElementById("slotTable");
 
                         let rows = table.rows.length;
                         let cols = table.rows[0].cells.length;
 
-                        //creo le celle, marcandole tutti come libere
+                        // Creation of the cells, all free
                         for(let r=1;r<rows;r++){
                             for(let c=1;c<cols;c++){
                                 table.rows[r].cells[c].innerHTML = "LIBERO";
                                 table.rows[r].cells[c].style.backgroundColor = "green";
 
-                                //aggiungo ad ogni cella un action listener
+                                // Add to all cells an actionListener
                                 table.rows[r].cells[c].addEventListener("click", cellListener);
                             }
                         }
 
+                        // For each booking, set the cell as occupied
                         data.forEach(element => {
-                            let c = document.getElementById(element.giorno).cellIndex;
-                            let r = document.getElementById(element.ora).rowIndex;
+                            let c = document.getElementById(element['giorno']).cellIndex;
+                            let r = document.getElementById(element['ora']).rowIndex;
 
                             table.rows[r].cells[c].innerHTML = "OCCUPATO";
                             table.rows[r].cells[c].style.backgroundColor = "red";
                         });
                     }else{
-                        alert(data.msg);
+                        alert(data['msg']);
                     }
                 }
             })//end ajax
         },
 
-        /* Estrae tutte le prenotazioni dal db e le visualizza nella tabella "table-storico-amm"
-        * */
+        /* Get all the user's bookings from server and visualize them in 'table-prenotazioni-utente' and 'table-storico-utente'
+         * tables.
+         */
         getPrenotazioniUtente:function(){
-            //document.getElementById("div-prenotazioni-utente").style.visibility = "hidden";
-            //if(this.isAuth()){
                 let self = this;
                 $.ajax({
                     url: "prenotazioniServlet",
@@ -292,7 +280,6 @@ let app = new Vue ({
                     },
 
                     success: function (response) {
-                        //svuoto la tabella
                         let table = document.getElementById("table-prenotazioni-utente");
                         let table_storico = document.getElementById("table-storico-utente");
                         cleanTable(table);
@@ -300,7 +287,7 @@ let app = new Vue ({
 
                         let data = JSON.parse(JSON.stringify(response));
 
-                        if (!data.msg) {  //se nella risposta non c'è msg, la query è andata a buon fine
+                        if (!data['msg']) {
                             let row_i_table = 1;
                             let row_i_storico = 1;
 
@@ -309,23 +296,17 @@ let app = new Vue ({
 
                             let row_table;
                             data.forEach(row_element => {
-
-                                if (row_element.stato === "Attiva") { //inserisco nella tabella "table-prenotazioni-utente"
+                                if (row_element['stato'] === "Attiva") { // Insert into 'table-prenotazioni-utente' table
                                     table = document.getElementById("table-prenotazioni-utente");
                                     row_table = table.insertRow(row_i_table);
 
-                                } else { //inserisco nella tabella "table-storico-utente"
+                                } else { // Insert into "table-storico-utente" table
                                     table = document.getElementById("table-storico-utente");
                                     row_table = table.insertRow(row_i_storico);
                                     row_i_storico++;
                                 }
 
-                                row_table.insertCell(0).innerHTML = row_element.id_prenotazione;
-                                row_table.insertCell(1).innerHTML = row_element.giorno;
-                                row_table.insertCell(2).innerHTML = row_element.ora;
-                                row_table.insertCell(3).innerHTML = row_element.docente;
-                                row_table.insertCell(4).innerHTML = row_element.corso;
-                                row_table.insertCell(5).innerHTML = row_element.stato;
+                                fillBookingRow(row_table, row_element);
 
                                 if (row_element.stato === "Attiva") {
                                     let elimina_cell = row_table.insertCell(6);
@@ -337,21 +318,16 @@ let app = new Vue ({
                                     eff_cell.addEventListener("click", effCellListener);
                                     row_i_table++;
                                 }
-
                             });
-
-
                         } else {
                             alert(data.msg);
                         }
                     }
-
                 })//end ajax
         },
 
 
         getPrenotazioni:function(){
-            let self = this;
             $.ajax({
                 url: "prenotazioniServlet",
                 type: "GET",
@@ -367,7 +343,7 @@ let app = new Vue ({
 
                     let data = JSON.parse(JSON.stringify(response));
 
-                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
+                    if(!data['msg']){  //se nella risposta non c'è msg, la query è andata a buon fine
                         let row_i = 1;
 
                         if(data.length !== 0)
@@ -377,19 +353,11 @@ let app = new Vue ({
                         data.forEach(row_element => {
                             table = document.getElementById("table-storico-amm");
                             row_table = table.insertRow(row_i);
-
-                            row_table.insertCell(0).innerHTML = row_element.id_prenotazione;
-                            row_table.insertCell(1).innerHTML = row_element.utente;
-                            row_table.insertCell(2).innerHTML = row_element.giorno;
-                            row_table.insertCell(3).innerHTML = row_element.ora;
-                            row_table.insertCell(4).innerHTML = row_element.docente;
-                            row_table.insertCell(5).innerHTML = row_element.corso;
-                            row_table.insertCell(6).innerHTML = row_element.stato;
-
+                            fillStoricoRowAmm(row_table,row_element);
                             row_i++;
                         });
                     }else{
-                        alert(data.msg);
+                        alert(data['msg']);
                     }
                 }
             })//end ajax
@@ -413,14 +381,14 @@ let app = new Vue ({
                 },
 
                 success: function (response) {
-                    //update menù a tendina
+                    //update select
                     app.getDocentiAmm();
                     app.getDocenti();
 
                     document.getElementById("nome_docente").value = "";
                     document.getElementById("cognome_docente").value = "";
                     let data = JSON.parse(JSON.stringify(response));
-                    alert(data.msg);
+                    alert(data['msg']);
                 }
             })//end ajax
         },
@@ -443,7 +411,7 @@ let app = new Vue ({
                     app.getCorsi();
                     document.getElementById("titolo_corso").value = "";
                     let data = JSON.parse(JSON.stringify(response));
-                    alert(data.msg);
+                    alert(data['msg']);
                 }
             })//end ajax
         },
@@ -462,21 +430,13 @@ let app = new Vue ({
                     let selDocAmm = document.getElementById("selectDocenteAmm");
                     cleanSelect(selDocAmm);
 
-                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
-                        //popolo il menu a tendina "selectCorso"
-
-                        for(let element in data){
-                            let optDocAmm = document.createElement("option");
-                            optDocAmm.value = data[element].id_docente;
-                            optDocAmm.innerText = data[element].nome+" "+data[element].cognome;
-                            selDocAmm.append(optDocAmm);
-                        }
+                    if(!data['msg']){
+                        fillDocentiSelect(selDocAmm,data);
                     }else{
-                        alert(data.msg);
+                        alert(data['msg']);
                     }
                 }
             })//end ajax
-
         },
 
         associa:function(){
@@ -490,10 +450,9 @@ let app = new Vue ({
                 },
 
                 success: function (response) {
-                    //cleanSelect(document.getElementById("selectDocenteAmm"));
                     app.getAssocAmm();
                     let data = JSON.parse(JSON.stringify(response));
-                    alert(data.msg);
+                    alert(data['msg']);
                 }
             })//end ajax
         },
@@ -515,7 +474,7 @@ let app = new Vue ({
                     app.getCorsi();
                     app.getAssocAmm(); //update del menù a tendina delle associazioni
                     let data = JSON.parse(JSON.stringify(response));
-                    alert(data.msg);
+                    alert(data['msg']);
                 }
             })//end ajax
         },
@@ -537,17 +496,15 @@ let app = new Vue ({
                     app.getDocentiAmm();
                     app.getAssocAmm(); //update del menù a tendina delle associazioni
                     let data = JSON.parse(JSON.stringify(response));
-                    alert(data.msg);
+                    alert(data['msg']);
                 }
             })//end ajax
         },
 
         getAssocAmm:function(){
-            //svuoto il menu a tendina "selectDocente"
             let sel = document.getElementById("selectAssocAmm");
             cleanSelect(sel);
 
-            //let idCorsoSelezionato = document.getElementById("selectCorso").value;
             $.ajax({
                 url: "insegnaServlet",
                 type: "GET",
@@ -558,16 +515,14 @@ let app = new Vue ({
                 success: function (response) {
                     let data = JSON.parse(JSON.stringify(response));
 
-                    if(!data.msg){  //se nella risposta non c'è msg, la query è andata a buon fine
-                        //popolo il menu a tendina "selectCorso"
+                    if(!data['msg']){
                         for(let element in data){
                             let opt = document.createElement("option");
-                            //opt.value = data[element].id_docente;
-                            opt.innerText = data[element].docente +' - '+ data[element].corso;
+                            opt.innerText = data[element]['docente'] +' - '+ data[element]['corso'];
                             sel.append(opt);
                         }
                     }else{
-                        alert(data.msg);
+                        alert(data['msg']);
                     }
                 }
             })//end ajax
@@ -589,147 +544,9 @@ let app = new Vue ({
                 success: function (response) {
                     app.getAssocAmm(); //update del menù a tendina delle associazioni
                     let data = JSON.parse(JSON.stringify(response));
-                    alert(data.msg);
+                    alert(data['msg']);
                 }
             })//end ajax
         }
     }
-
 });
-
-/* Invocazione della servlet "prenotazioniServlet" per fare una prenotazione */
-function prenota(giorno, ora, table, row, col){
-    let cell = table.rows[row].cells[col];
-
-    $.ajax({
-        url: "prenotazioniServlet",
-        type: "POST",
-        data: {
-            'action': "doPrenota",
-            'id_corso': document.getElementById("selectCorso").value,
-            'id_docente': document.getElementById("selectDocente").value,
-            'giorno': giorno,
-            'ora': ora
-        },
-
-        success: function(response) {
-            let data = JSON.parse(JSON.stringify(response));
-
-            if(data.msg === 'OK'){
-                cell.innerHTML = "OCCUPATO";
-                cell.style.backgroundColor = "red";
-                //todo: review this. Is a little inefficient
-                app.getPrenotazioniUtente();
-            }else{
-                alert(data.msg);
-            }
-        }
-    })//end ajax
-}
-
-/* event listener per le celle della tabella degli slot */
-function cellListener(){
-    let table = document.getElementById("slotTable");
-
-    let col = $(this).parent().children().index($(this));
-    let row = ($(this).parent().parent().children().index($(this).parent()))+1;
-
-    let col_header = table.rows[0].cells[col].innerHTML;
-    let row_header = table.rows[row].cells[0].innerHTML;
-
-    /* se la cella cliccata è uno slot libero */
-    if(table.rows[row].cells[col].innerHTML === 'LIBERO'){
-        prenota(col_header,row_header, table, row, col);
-    }
-}
-
-function disdiciCellListener(){
-    let table = document.getElementById("table-prenotazioni-utente");
-    let row_index = ($(this).parent().parent().children().index($(this).parent()));
-    let row = table.rows[row_index];
-
-    $.ajax({
-        url: "prenotazioniServlet",
-        type: "POST",
-        data: {
-            'action': "disdiciPrenotazione",
-            'id_prenotazione': row.cells[0].innerHTML,
-        },
-
-        success: function(response) {
-            let data = JSON.parse(JSON.stringify(response));
-
-            if(data.msg === 'OK'){
-
-                row.cells[5].innerHTML = "Disdetta";
-                addRow(document.getElementById("table-storico-utente"),row);
-                if(app.isAmmAuth()){
-                    addRow(document.getElementById("table-storico-amm"),row);
-                }
-                row.remove();
-
-            }else{
-                alert(data.msg);
-            }
-        }
-    })//end ajax
-}
-
-function effCellListener(){
-    let table = document.getElementById("table-prenotazioni-utente");
-    let row_index = ($(this).parent().parent().children().index($(this).parent()));
-    let row = table.rows[row_index];
-
-    $.ajax({
-        url: "prenotazioniServlet",
-        type: "POST",
-        data: {
-            'action': "segnaComeEffettuataPrenotazione",
-            'id_prenotazione': row.cells[0].innerHTML,
-        },
-
-        success: function(response) {
-            let data = JSON.parse(JSON.stringify(response));
-
-            if(data.msg === 'OK'){
-                row.cells[5].innerHTML = "Effettuata";
-                addRow(document.getElementById("table-storico-utente"),row);
-                if(app.isAmmAuth()){
-                    addRow(document.getElementById("table-storico-amm"),row);
-                }
-                row.remove();
-
-            }else{
-                alert(data.msg);
-            }
-        }
-    })//end ajax
-}
-
-function cleanTable(table){
-    if(table !== null)
-        for(let i=table.rows.length-1;i>0;i--){
-            table.deleteRow(i);
-        }
-}
-
-/* aggiunge una riga row alla tabella table */
-function addRow(table, row){
-   // let table_storico = document.getElementById("table-storico-utente");
-    let row_i = table.rows.length;
-    //table_storico.insertRow(row_i).innerHTML = table.rows[row];
-    let row_new = table.insertRow(row_i);
-    row_new.insertCell(0).innerHTML = row.cells[0].innerHTML;
-    row_new.insertCell(1).innerHTML = row.cells[1].innerHTML;
-    row_new.insertCell(2).innerHTML = row.cells[2].innerHTML;
-    row_new.insertCell(3).innerHTML = row.cells[3].innerHTML;
-    row_new.insertCell(4).innerHTML = row.cells[4].innerHTML;
-    row_new.insertCell(5).innerHTML = row.cells[5].innerHTML;
-}
-
-function cleanSelect(select){
-    if(select !== null)
-        for(let i=select.options.length-1;i>0;i--){
-            select.remove(i);
-        }
-}
