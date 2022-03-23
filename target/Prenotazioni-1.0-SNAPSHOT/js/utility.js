@@ -1,4 +1,3 @@
-/* Invocazione della servlet "prenotazioniServlet" per fare una prenotazione */
 function prenota(giorno, ora, table, row, col){
     let cell = table.rows[row].cells[col];
 
@@ -16,20 +15,20 @@ function prenota(giorno, ora, table, row, col){
         success: function(response) {
             let data = JSON.parse(JSON.stringify(response));
 
-            if(data.msg === 'OK'){
+            if(data['msg'] === 'OK'){
                 cell.innerHTML = "OCCUPATO";
                 cell.style.backgroundColor = "red";
-                //todo: review this. Is a little inefficient
                 app.getPrenotazioniUtente();
             }else{
-                alert(data.msg);
+                alert(data['msg']);
             }
         }
     })//end ajax
 }
 
-/* event listener per le celle della tabella degli slot */
+/* slotTable cell listener */
 function cellListener(){
+
     let table = document.getElementById("slotTable");
 
     let col = $(this).parent().children().index($(this));
@@ -38,13 +37,20 @@ function cellListener(){
     let col_header = table.rows[0].cells[col].innerHTML;
     let row_header = table.rows[row].cells[0].innerHTML;
 
-    /* se la cella cliccata è uno slot libero */
+    /* If clicked cell is a free slot */
     if(table.rows[row].cells[col].innerHTML === 'LIBERO'){
+        if(!confirm('Effettuare la prenotazione per il giorno '+col_header+' nell\'orario '+row_header+'?' ))
+            return;
         prenota(col_header,row_header, table, row, col);
+    }else{
+        alert("Lo slot selezionato è occupato");
     }
 }
 
 function disdiciCellListener(){
+    if(!confirm('Disdire la prenotazione?'))
+        return;
+
     let table = document.getElementById("table-prenotazioni-utente");
     let row_index = ($(this).parent().parent().children().index($(this).parent()));
     let row = table.rows[row_index];
@@ -60,7 +66,7 @@ function disdiciCellListener(){
         success: function(response) {
             let data = JSON.parse(JSON.stringify(response));
 
-            if(data.msg === 'OK'){
+            if(data['msg'] === 'OK'){
 
                 row.cells[5].innerHTML = "Disdetta";
                 addRow(document.getElementById("table-storico-utente"),row);
@@ -70,13 +76,16 @@ function disdiciCellListener(){
                 row.remove();
 
             }else{
-                alert(data.msg);
+                alert(data['msg']);
             }
         }
     })//end ajax
 }
 
 function effCellListener(){
+    if(!confirm('Segnare la prenotazione come effettuata?'))
+        return;
+
     let table = document.getElementById("table-prenotazioni-utente");
     let row_index = ($(this).parent().parent().children().index($(this).parent()));
     let row = table.rows[row_index];
@@ -92,7 +101,7 @@ function effCellListener(){
         success: function(response) {
             let data = JSON.parse(JSON.stringify(response));
 
-            if(data.msg === 'OK'){
+            if(data['msg'] === 'OK'){
                 row.cells[5].innerHTML = "Effettuata";
                 addRow(document.getElementById("table-storico-utente"),row);
                 if(app.isAmmAuth()){
@@ -101,7 +110,7 @@ function effCellListener(){
                 row.remove();
 
             }else{
-                alert(data.msg);
+                alert(data['msg']);
             }
         }
     })//end ajax
@@ -114,7 +123,7 @@ function cleanTable(table){
         }
 }
 
-/* aggiunge una riga row alla tabella table */
+/* Insert row into table */
 function addRow(table, row){
     let row_i = table.rows.length;
     let row_new = table.insertRow(row_i);
@@ -140,13 +149,13 @@ function fillBookingRow(row_table,row_element) {
 }
 
 function fillStoricoRowAmm(row_table,row_element) {
-    row_table.insertCell(0).innerHTML = row_element.id_prenotazione;
-    row_table.insertCell(1).innerHTML = row_element.utente;
-    row_table.insertCell(2).innerHTML = row_element.giorno;
-    row_table.insertCell(3).innerHTML = row_element.ora;
-    row_table.insertCell(4).innerHTML = row_element.docente;
-    row_table.insertCell(5).innerHTML = row_element.corso;
-    row_table.insertCell(6).innerHTML = row_element.stato;
+    row_table.insertCell(0).innerHTML = row_element['id_prenotazione'];
+    row_table.insertCell(1).innerHTML = row_element['utente'];
+    row_table.insertCell(2).innerHTML = row_element['giorno'];
+    row_table.insertCell(3).innerHTML = row_element['ora'];
+    row_table.insertCell(4).innerHTML = row_element['docente'];
+    row_table.insertCell(5).innerHTML = row_element['corso'];
+    row_table.insertCell(6).innerHTML = row_element['stato'];
 }
 
 function fillDocentiSelect(select,data){

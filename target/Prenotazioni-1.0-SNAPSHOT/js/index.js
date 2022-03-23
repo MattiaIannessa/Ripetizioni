@@ -8,8 +8,7 @@ let app = new Vue ({
     },
 
     mounted(){
-        //todo: change this comment, checking what getSession does
-        //when app is loaded, check if user is logged and get courses titles.
+        //when app is loaded, get user's role and get courses titles.
         this.getSession();
         this.getCorsi();
     },
@@ -112,7 +111,7 @@ let app = new Vue ({
                     let data = JSON.parse(JSON.stringify(response));
 
                     if(data.role === 'null'){
-                        alert(data.msg);
+                        alert(data['msg']);
                     }else{
                         app.setUsername(data.username);
                         app.setRole(data.role);
@@ -245,6 +244,7 @@ let app = new Vue ({
                             for(let c=1;c<cols;c++){
                                 table.rows[r].cells[c].innerHTML = "LIBERO";
                                 table.rows[r].cells[c].style.backgroundColor = "green";
+                                table.rows[r].cells[c].style.cursor = "pointer";
 
                                 // Add to all cells an actionListener
                                 table.rows[r].cells[c].addEventListener("click", cellListener);
@@ -308,19 +308,21 @@ let app = new Vue ({
 
                                 fillBookingRow(row_table, row_element);
 
-                                if (row_element.stato === "Attiva") {
+                                if (row_element['stato'] === "Attiva") {
                                     let elimina_cell = row_table.insertCell(6);
                                     elimina_cell.innerHTML = "Disdici";
+                                    elimina_cell.style.cursor = "pointer";
                                     elimina_cell.addEventListener("click", disdiciCellListener);
 
                                     let eff_cell = row_table.insertCell(7);
                                     eff_cell.innerHTML = "Segna come effettuata";
+                                    eff_cell.style.cursor = "pointer";
                                     eff_cell.addEventListener("click", effCellListener);
                                     row_i_table++;
                                 }
                             });
                         } else {
-                            alert(data.msg);
+                            alert(data['msg']);
                         }
                     }
                 })//end ajax

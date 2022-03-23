@@ -18,7 +18,6 @@ function prenota(giorno, ora, table, row, col){
             if(data['msg'] === 'OK'){
                 cell.innerHTML = "OCCUPATO";
                 cell.style.backgroundColor = "red";
-                //todo: review this. Is a little inefficient
                 app.getPrenotazioniUtente();
             }else{
                 alert(data['msg']);
@@ -29,6 +28,7 @@ function prenota(giorno, ora, table, row, col){
 
 /* slotTable cell listener */
 function cellListener(){
+
     let table = document.getElementById("slotTable");
 
     let col = $(this).parent().children().index($(this));
@@ -39,11 +39,18 @@ function cellListener(){
 
     /* If clicked cell is a free slot */
     if(table.rows[row].cells[col].innerHTML === 'LIBERO'){
+        if(!confirm('Effettuare la prenotazione per il giorno '+col_header+' nell\'orario '+row_header+'?' ))
+            return;
         prenota(col_header,row_header, table, row, col);
+    }else{
+        alert("Lo slot selezionato è occupato");
     }
 }
 
 function disdiciCellListener(){
+    if(!confirm('Disdire la prenotazione?'))
+        return;
+
     let table = document.getElementById("table-prenotazioni-utente");
     let row_index = ($(this).parent().parent().children().index($(this).parent()));
     let row = table.rows[row_index];
@@ -76,6 +83,9 @@ function disdiciCellListener(){
 }
 
 function effCellListener(){
+    if(!confirm('Segnare la prenotazione come effettuata?'))
+        return;
+
     let table = document.getElementById("table-prenotazioni-utente");
     let row_index = ($(this).parent().parent().children().index($(this).parent()));
     let row = table.rows[row_index];
