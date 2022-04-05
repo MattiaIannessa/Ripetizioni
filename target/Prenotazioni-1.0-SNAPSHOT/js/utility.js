@@ -128,8 +128,6 @@ function cleanSlotTable(table){
         let rows = table.rows.length;
         let cols = table.rows[0].cells.length;
         console.log(rows + " | " + cols);
-        //todo: remove this return
-        //return;
         for(let i=1;i<table.rows.length;i++){
             for(let j=1; j<table.rows[0].cells.length; j++) {
                 cleanCell(table,i,j);
@@ -195,13 +193,14 @@ function fillDocentiSelect(select,data){
 function makeSlotTableCell(table, r , c, type){
     if(type === "free"){
         table.rows[r].cells[c].innerHTML = "LIBERO";
-        table.rows[r].cells[c].style.textDecoration = "underline";
-        table.rows[r].cells[c].style.backgroundColor = "#00cc00";
-        table.rows[r].cells[c].style.cursor = "pointer";
-        table.rows[r].cells[c].addEventListener("click", cellListener);
+        table.rows[r].cells[c].style.backgroundColor = "rgb(0,201,0)";
+        if(app && app.isAuth()){
+            table.rows[r].cells[c].style.textDecoration = "underline";
+            table.rows[r].cells[c].style.cursor = "pointer";
+            table.rows[r].cells[c].addEventListener("click", cellListener);
+        }
     }else if(type === "occupied"){
         table.rows[r].cells[c].innerHTML = "OCCUPATO";
-        table.rows[r].cells[c].style.textColor = "#808080";
         table.rows[r].cells[c].style.backgroundColor = "#ff3300";
     }
 }

@@ -40,7 +40,7 @@ let app = new Vue ({
         //return true if user is authenticated
         isAuth:function(){
             if(this.role !== null) {
-                if (this.role.localeCompare("Amministratore") || this.role.localeCompare("Cliente")) {
+                if (this.role === "Amministratore" || this.role === "Cliente"/*this.role.localeCompare("Amministratore") || this.role.localeCompare("Cliente")*/) {
                     this.getPrenotazioniUtente();
                     return true;
                 }
@@ -315,11 +315,15 @@ let app = new Vue ({
                                 if (row_element['stato'] === "Attiva") {
                                     let elimina_cell = row_table.insertCell(6);
                                     elimina_cell.innerHTML = "Disdici";
+                                    elimina_cell.style.color = "#ff3300";
+                                    elimina_cell.style.textDecoration = "underline";
                                     elimina_cell.style.cursor = "pointer";
                                     elimina_cell.addEventListener("click", disdiciCellListener);
 
                                     let eff_cell = row_table.insertCell(7);
                                     eff_cell.innerHTML = "Segna come effettuata";
+                                    eff_cell.style.color = "rgb(0,201,0)";
+                                    eff_cell.style.textDecoration = "underline";
                                     eff_cell.style.cursor = "pointer";
                                     eff_cell.addEventListener("click", effCellListener);
                                     row_i_table++;

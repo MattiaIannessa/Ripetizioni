@@ -193,13 +193,14 @@ function fillDocentiSelect(select,data){
 function makeSlotTableCell(table, r , c, type){
     if(type === "free"){
         table.rows[r].cells[c].innerHTML = "LIBERO";
-        table.rows[r].cells[c].style.textDecoration = "underline";
-        table.rows[r].cells[c].style.backgroundColor = "#00cc00";
-        table.rows[r].cells[c].style.cursor = "pointer";
-        table.rows[r].cells[c].addEventListener("click", cellListener);
+        table.rows[r].cells[c].style.backgroundColor = "rgb(0,201,0)";
+        if(app && app.isAuth()){
+            table.rows[r].cells[c].style.textDecoration = "underline";
+            table.rows[r].cells[c].style.cursor = "pointer";
+            table.rows[r].cells[c].addEventListener("click", cellListener);
+        }
     }else if(type === "occupied"){
         table.rows[r].cells[c].innerHTML = "OCCUPATO";
-        table.rows[r].cells[c].style.textColor = "#808080";
         table.rows[r].cells[c].style.backgroundColor = "#ff3300";
     }
 }

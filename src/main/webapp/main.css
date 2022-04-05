@@ -39,7 +39,7 @@ header{
     text-align: left;
 }
 
-#btn-logout{
+#btn-logout, #btn-login-header{
     position: absolute;
     right: 1em;
     top: 1em;

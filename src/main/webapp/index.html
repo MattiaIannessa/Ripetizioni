@@ -21,7 +21,8 @@
     <div id="page">
         <header>
             <h1>Prenotazioni</h1>
-            <button v-if="role" id="btn-logout" class="btn btn-outline-light" v-on:click="logout">LOGOUT</button>
+            <button v-if="role && isAuth()" id="btn-logout" class="btn btn-outline-light" v-on:click="logout">LOGOUT</button>
+            <button v-if="role && !isAuth()" id="btn-login-header" class="btn btn-outline-light" v-on:click="logout">LOGIN</button>
         </header>
 
         <!--<aside>
@@ -50,7 +51,8 @@
                 </select>
 
                 <table id="slotTable" class="table" >
-                <caption>Per prenotare selezionare corso e docente e cliccare su un uno slot libero</caption>
+                <caption v-if="isAuth()">Per prenotare selezionare corso e docente e cliccare su un uno slot libero</caption>
+                <caption v-if="!isAuth()">Per prenotare effettuare il login</caption>
                 <thead class="thead-dark">
                 <tr>
                     <td>Calendario</td>
