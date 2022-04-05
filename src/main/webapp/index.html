@@ -41,7 +41,7 @@
 
             <div id="div-prenotazioni-table" v-if="role">
                 <label>Selezionare una corso</label>
-                <select class="form-select" id="selectCorso" v-on:change="getDocenti" >
+                <select class="form-select" id="selectCorso" v-on:change="populateSelectDocenti" >
                     <option selected>Nessun corso</option>
                 </select>
                 <label>Selezionare un docente</label>

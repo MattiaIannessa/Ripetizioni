@@ -24,10 +24,6 @@ public class DocentiServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-    }
-
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
 
         Gson gson = new Gson();
@@ -35,10 +31,10 @@ public class DocentiServlet extends HttpServlet {
 
         switch(request.getParameter("action")){
             case "getDocenti":
-
                 ArrayList<Docente> queryResult = null;
                 try {
                     String param = request.getParameter("id_corso");
+                    System.out.println("id_corso: "+param);
                     if(param != null) {  //se nella richiesta c'è id_corso, il client vuole la lista dei docenti di un certo corso
                         queryResult = DocentiDAO.getDocenti(Integer.parseInt(param));      //eseguo la query per ricavare tutti i docenti della materia con id = param
                     }else{ //se non c'è param, restituisco tutti i docenti presenti nel db
@@ -53,6 +49,20 @@ public class DocentiServlet extends HttpServlet {
                 out.println(gson.toJson(queryResult));
 
                 break;
+            default:
+                out.println(" { \"msg\": \"Invalid action\" }");
+                out.flush();
+                out.close();
+        }
+    }
+
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
+        Gson gson = new Gson();
+        PrintWriter out = response.getWriter();
+
+        switch(request.getParameter("action")){
             case "rimuoviDocente":
                 int id_docente = Integer.parseInt(request.getParameter("docente"));
 

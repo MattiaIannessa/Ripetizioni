@@ -192,6 +192,11 @@ let app = new Vue ({
             })//end ajax
         },
 
+        populateSelectDocenti:function () {
+            cleanSlotTable(document.getElementById("slotTable"));
+            this.getDocenti();
+        },
+
         // Same operations of getCorsi
         getDocenti:function(){
             let sele = document.getElementById("selectDocente");
@@ -200,7 +205,7 @@ let app = new Vue ({
             //let idCorsoSelezionato = document.getElementById("selectCorso").value;
             $.ajax({
                 url: "docentiServlet",
-                type: "POST",
+                type: "GET",
                 data: {
                     'action': "getDocenti",
                     'id_corso': document.getElementById("selectCorso").value
@@ -222,6 +227,8 @@ let app = new Vue ({
 
         // Get active bookings of selected teacher and fill free slots table
         getPrenotazioniDocente:function(){
+            cleanSlotTable(document.getElementById("slotTable"));
+            //return;
             $.ajax({
                 url: "prenotazioniServlet",
                 type: "GET",
@@ -239,26 +246,23 @@ let app = new Vue ({
                         let rows = table.rows.length;
                         let cols = table.rows[0].cells.length;
 
-                        // Creation of the cells, all free
-                        for(let r=1;r<rows;r++){
-                            for(let c=1;c<cols;c++){
-                                table.rows[r].cells[c].innerHTML = "LIBERO";
-                                table.rows[r].cells[c].style.backgroundColor = "green";
-                                table.rows[r].cells[c].style.cursor = "pointer";
-
-                                // Add to all cells an actionListener
-                                table.rows[r].cells[c].addEventListener("click", cellListener);
-                            }
-                        }
-
-                        // For each booking, set the cell as occupied
+                        // For each booking, set the corresponding cell as occupied
                         data.forEach(element => {
                             let c = document.getElementById(element['giorno']).cellIndex;
                             let r = document.getElementById(element['ora']).rowIndex;
+                            makeSlotTableCell(table,r,c,"occupied");
 
-                            table.rows[r].cells[c].innerHTML = "OCCUPATO";
-                            table.rows[r].cells[c].style.backgroundColor = "red";
                         });
+
+                        // Creation of the free cells
+                        for(let r=1;r<rows;r++){
+                            for(let c=1;c<cols;c++){
+                                if( !(table.rows[r].cells[c].innerHTML === "OCCUPATO") )
+                                    makeSlotTableCell(table,r,c,"free");
+                            }
+                        }
+
+
                     }else{
                         alert(data['msg']);
                     }
@@ -421,7 +425,7 @@ let app = new Vue ({
         getDocentiAmm:function(){
             $.ajax({
                 url: "docentiServlet",
-                type: "POST",
+                type: "GET",
                 data: {
                     'action': "getDocenti"
                 },

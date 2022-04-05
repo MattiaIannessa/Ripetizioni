@@ -123,6 +123,29 @@ function cleanTable(table){
         }
 }
 
+function cleanSlotTable(table){
+    if(table && table.rows.length > 1 && table.rows[0].cells.length > 1 ){
+        let rows = table.rows.length;
+        let cols = table.rows[0].cells.length;
+        console.log(rows + " | " + cols);
+        for(let i=1;i<table.rows.length;i++){
+            for(let j=1; j<table.rows[0].cells.length; j++) {
+                cleanCell(table,i,j);
+            }
+        }
+    }
+}
+
+function cleanCell(table,r,c){
+    if(table.rows[r].cells[c] !== undefined){
+        table.rows[r].cells[c].innerHTML = "";
+        table.rows[r].cells[c].style.textDecoration = "";
+        table.rows[r].cells[c].style.backgroundColor = "#ffffff";
+        table.rows[r].cells[c].style.cursor = "";
+        table.rows[r].cells[c].removeEventListener("click", cellListener);
+    }
+}
+
 /* Insert row into table */
 function addRow(table, row){
     let row_i = table.rows.length;
@@ -164,5 +187,19 @@ function fillDocentiSelect(select,data){
         opt.value = data[element]['id_docente'];
         opt.innerText = data[element]['nome']+" "+data[element]['cognome'];
         select.append(opt);
+    }
+}
+
+function makeSlotTableCell(table, r , c, type){
+    if(type === "free"){
+        table.rows[r].cells[c].innerHTML = "LIBERO";
+        table.rows[r].cells[c].style.textDecoration = "underline";
+        table.rows[r].cells[c].style.backgroundColor = "#00cc00";
+        table.rows[r].cells[c].style.cursor = "pointer";
+        table.rows[r].cells[c].addEventListener("click", cellListener);
+    }else if(type === "occupied"){
+        table.rows[r].cells[c].innerHTML = "OCCUPATO";
+        table.rows[r].cells[c].style.textColor = "#808080";
+        table.rows[r].cells[c].style.backgroundColor = "#ff3300";
     }
 }

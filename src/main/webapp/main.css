@@ -50,12 +50,6 @@ input{
     margin: 0.5em;
 }
 
-nav{
-    border: solid green;
-    width: 22%;
-    float: left;
-}
-
 article{
     font-size: 1.2em;
     float: right;
@@ -85,20 +79,6 @@ article{
     text-align: center;
 }
 */
-aside{
-    border: solid red;
-    width: 22%;
-    float: right;
-}
-
-
-
-footer{
-    float: bottom;
-    clear: both;
-    width: 100%;
-    background-color: yellow;
-}
 
 .div_db_amm{
     border: solid black;
@@ -106,4 +86,5 @@ footer{
     padding: 1em;
     display: flex;
     flex-wrap: wrap;
+    width: fit-content;
 }
