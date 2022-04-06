@@ -34,7 +34,6 @@ header{
     width: 100%;
     background-color: black;
     display: flex;
-   /* flex-direction: row; */
     padding: 0.5em;
     text-align: left;
 }
@@ -53,7 +52,6 @@ input{
 article{
     font-size: 1.2em;
     float: right;
-    /*border: solid blue;*/
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -63,28 +61,71 @@ article{
     padding: 30px;
 }
 
-/*.slotTableClass{
-    border: solid black;
-}
-
-.slotTableClass td{
-    color: white;
-    border-top: solid grey;
-    border-left: solid grey;
+#div-db-amm{
     text-align: center;
+    margin-top: 2em;
+    display: inline-block;
+    align-items: center;
 }
-
-.slotTableClass th{
-    border: solid black;
-    text-align: center;
-}
-*/
 
 .div_db_amm{
     border: solid black;
     margin-bottom: 1em;
     padding: 1em;
     display: flex;
+    flex-direction: column;
+    vertical-align: top;
+    horiz-align: center;
     flex-wrap: wrap;
     width: fit-content;
+}
+
+.div_db_amm_grid{
+    margin-top: 1.5em;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0.3em;
+    grid-auto-rows: minmax(auto, auto);
+}
+
+.div_db_amm_grid_el_assoc{
+    margin-top: 1.5em;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+    gap: 0.1em;
+    grid-auto-rows: minmax(auto, auto);
+}
+
+.item1 {
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.div_db_amm_insert{
+    border: solid black;
+    margin-bottom: 1em;
+    padding: 1em;
+    display: inline-block;
+    vertical-align: top;
+    horiz-align: center;
+    height: 15em;
+    width: fit-content;
+}
+
+.ins-corso{
+    margin-top: 2em;
+}
+
+.wrapper{
+    text-align: center;
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#btn-elimina-assoc{
+    margin-top: 1em;
 }

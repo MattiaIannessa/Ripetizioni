@@ -143,56 +143,72 @@
 
             <div id="div-db-amm" v-if="isAmmAuth()">
 
-                <h3>Inserisci docente</h3>
-                <div class="div_db_amm">
+                <div class="div_db_amm_insert">
+                    <h3>Inserisci docente</h3>
                     <form method="post">
                         <p><label>Nome<input type = "text" id = "nome_docente" required/></label></p>
                         <p><label>Cognome<input type = "text" id = "cognome_docente" required/></label></p>
                         <input class="btn btn-outline-dark" v-on:click="inserisciDocente"  type="button" value="INSERISCI" id="inserisciDocenteBtn"/>
                     </form>
                 </div>
-                <h3>Inserisci corso</h3>
-                <div class="div_db_amm">
-                    <form method="post">
+
+                <div class="div_db_amm_insert">
+                    <h3>Inserisci corso</h3>
+                    <form method="post"  class="ins-corso">
                         <p><label>Titolo<input type = "text" id = "titolo_corso" required/></label></p>
                         <input class="btn btn-outline-dark" v-on:click="inserisciCorso" type="button" value="INSERISCI" id="inserisciCorsoBtn"/>
                     </form>
                 </div>
+            </div>
 
-                <h3>Associazioni corso-docente</h3>
+            <div class="wrapper" v-if="isAmmAuth()">
                 <div class="div_db_amm">
-                    <label>Selezionare un corso</label>
-                    <select class="form-select" id="selectCorsoAmm">
-                        <option selected>Nessun corso</option>
-                    </select>
-                    <label>Selezionare un docente</label>
-                    <select class="form-select" id="selectDocenteAmm">
-                        <option selected>Nessun docente</option>
-                    </select>
-                    <button id="btn-associa" class="btn btn-outline-dark" v-on:click="associa">ASSOCIA</button>
-                    <button id="btn-elimina-corso" class="btn btn-outline-dark" v-on:click="eliminaCorso">ELIMINA CORSO</button>
-                    <button id="btn-elimina-docente" class="btn btn-outline-dark" v-on:click="eliminaDocente">ELIMINA DOCENTE</button>
+                    <h3>Gestione corso-docente</h3>
+                    <div class="div_db_amm_grid">
+                        <div class="item1">
+                            <label>Selezionare un corso</label>
+                        </div>
+                        <div class="item2">
+                            <select class="form-select" id="selectCorsoAmm">
+                                <option selected>Nessun corso</option>
+                            </select>
+                        </div>
+                        <div class="item3">
+                            <button id="btn-elimina-corso" class="btn btn-outline-dark" v-on:click="eliminaCorso">ELIMINA CORSO</button>
+                        </div>
+
+                        <div class="item4">
+                            <label>Selezionare un docente</label>
+                        </div>
+                        <div class="item5">
+                            <select class="form-select" id="selectDocenteAmm">
+                                <option selected>Nessun docente</option>
+                            </select>
+                        </div>
+                        <div class="item6">
+                            <button id="btn-elimina-docente" class="btn btn-outline-dark" v-on:click="eliminaDocente">ELIMINA DOCENTE</button>
+                        </div>
+
+                        <div class="item7"></div>
+                        <div class="item8">
+                            <button id="btn-associa" class="btn btn-outline-dark" v-on:click="associa">ASSOCIA</button>
+                        </div>
+                    </div>
                 </div>
 
-                <h3>Elimina associazioni corso-docente</h3>
                 <div class="div_db_amm">
+                    <h3>Elimina associazioni corso-docente</h3>
+                    <!--<div class="div_db_amm_grid_el_assoc">-->
                     <label>Selezionare una associazione</label>
                     <select class="form-select" id="selectAssocAmm">
                         <option selected>Nessuna associazione</option>
                     </select>
                     <button id="btn-elimina-assoc" class="btn btn-outline-dark" v-on:click="eliminaAssoc">ELIMINA ASSOCIAZIONE</button>
+                    <!--</div>-->
                 </div>
-
             </div>
 
         </article>
-
-        <!--<nav>
-          <p>placeholder nav</p>
-        </nav>-->
-
-
-
 <footer></footer>
     </div>
 
