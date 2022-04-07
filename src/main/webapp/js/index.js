@@ -450,12 +450,19 @@ let app = new Vue ({
         },
 
         associa:function(){
+            let corso = document.getElementById("selectCorsoAmm").value;
+            let docente = document.getElementById("selectDocenteAmm").value;
+            console.log(corso);
+            if(corso === "Nessun corso" || docente === "Nessun docente" ){
+                alert("Seleziona un corso e un docente da associare");
+                return;
+            }
             $.ajax({
                 url: "insegnaServlet",
                 type: "POST",
                 data: {
-                    'corso': document.getElementById("selectCorsoAmm").value,
-                    'docente': document.getElementById("selectDocenteAmm").value,
+                    'corso': corso,
+                    'docente': docente,
                     'action': "inserisciInsegna"
                 },
 
