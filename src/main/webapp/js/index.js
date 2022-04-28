@@ -30,7 +30,6 @@ let app = new Vue ({
                 //rimuove tutti gli spazi bianchi dalla stringa rl
                 this.role = rl.replace(/\s+/g, '');
             }
-
         },
 
         getRole:function(){
@@ -39,8 +38,9 @@ let app = new Vue ({
 
         //return true if user is authenticated
         isAuth:function(){
+            this.getSession();
             if(this.role !== null) {
-                if (this.role === "Amministratore" || this.role === "Cliente"/*this.role.localeCompare("Amministratore") || this.role.localeCompare("Cliente")*/) {
+                if (this.role === "Amministratore" || this.role === "Cliente") {
                     this.getPrenotazioniUtente();
                     return true;
                 }
@@ -50,7 +50,7 @@ let app = new Vue ({
 
         //return true if user is logged as admin
         isAmmAuth:function(){
-
+            this.getSession();
             if(this.role !== null) {
                 if(this.role.localeCompare("Amministratore")===0) {
                     this.getPrenotazioni();
@@ -192,6 +192,7 @@ let app = new Vue ({
             })//end ajax
         },
 
+        // When selectDocente is changed, empty slotTable and get teachers
         populateSelectDocenti:function () {
             cleanSlotTable(document.getElementById("slotTable"));
             this.getDocenti();
@@ -202,7 +203,6 @@ let app = new Vue ({
             let sele = document.getElementById("selectDocente");
             cleanSelect(sele);
 
-            //let idCorsoSelezionato = document.getElementById("selectCorso").value;
             $.ajax({
                 url: "docentiServlet",
                 type: "GET",
@@ -228,7 +228,6 @@ let app = new Vue ({
         // Get active bookings of selected teacher and fill free slots table
         getPrenotazioniDocente:function(){
             cleanSlotTable(document.getElementById("slotTable"));
-            //return;
             $.ajax({
                 url: "prenotazioniServlet",
                 type: "GET",
@@ -261,8 +260,6 @@ let app = new Vue ({
                                     makeSlotTableCell(table,r,c,"free");
                             }
                         }
-
-
                     }else{
                         alert(data['msg']);
                     }
@@ -336,7 +333,7 @@ let app = new Vue ({
                 })//end ajax
         },
 
-
+        // Get all the bookings in db and visualize them in "table-storico-amm"
         getPrenotazioni:function(){
             $.ajax({
                 url: "prenotazioniServlet",
@@ -426,6 +423,7 @@ let app = new Vue ({
             })//end ajax
         },
 
+        // Get all teachers in db
         getDocentiAmm:function(){
             $.ajax({
                 url: "docentiServlet",
@@ -518,6 +516,7 @@ let app = new Vue ({
             })//end ajax
         },
 
+        // Get all associations between teachers and courses in db
         getAssocAmm:function(){
             let sel = document.getElementById("selectAssocAmm");
             cleanSelect(sel);
